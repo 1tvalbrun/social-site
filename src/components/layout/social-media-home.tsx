@@ -23,7 +23,7 @@ export default function SocialMediaHome() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-gray-50 dark:bg-background text-gray-900 dark:text-gray-100">
       <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
       <div className="flex relative pt-16 pb-16 md:pb-0">
@@ -49,7 +49,7 @@ export default function SocialMediaHome() {
             <>
               {isMobile && (
                 <div
-                  className="absolute inset-0 bg-black bg-opacity-50"
+                  className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm"
                   onClick={() => setSidebarOpen(false)}
                 />
               )}

@@ -25,7 +25,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuPortal,
 } from '@/components/common/dropdown-menu';
 import SearchOverlay from '@/components/features/search-overlay';
 
@@ -41,10 +40,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 z-30 px-4 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-card border-b border-gray-200 dark:border-border z-30 px-4 flex items-center justify-between backdrop-blur-sm dark:backdrop-blur-sm">
         {/* Left section */}
         <div className="flex items-center">
-          <div className="font-bold text-xl text-gray-900 dark:text-white">
+          <div className="font-bold text-xl text-gray-900 dark:text-foreground">
             SocialApp
           </div>
         </div>
@@ -52,11 +51,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
         {/* Search bar - hidden on very small screens */}
         <div className="hidden sm:flex relative mx-4 flex-1 max-w-md">
           <div className="relative w-full">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search..."
-              className="w-full pl-9 h-9"
+              className="w-full pl-9 h-9 border-gray-200 dark:border-border dark:bg-muted/20 dark:placeholder:text-muted-foreground/70 rounded-full focus-visible:ring-primary/30"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onFocus={() => setSearchOverlayOpen(true)}
@@ -81,7 +80,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             {notifications > 0 && (
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-white dark:bg-primary/90">
                 {notifications}
               </span>
             )}
@@ -96,7 +95,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           >
             {theme === 'dark' ? (
-              <Sun className="h-5 w-5" />
+              <Sun className="h-5 w-5 text-yellow-400" />
             ) : (
               <Moon className="h-5 w-5" />
             )}
@@ -104,52 +103,67 @@ export default function Header({ onMenuClick }: HeaderProps) {
           </Button>
 
           {/* User profile dropdown */}
-          <div className="relative">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
-                >
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src="/placeholder.svg?height=32&width=32"
-                      alt="@user"
-                    />
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuPortal
-                container={document.getElementById('dropdown-portal')}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full"
               >
-                <DropdownMenuContent align="end" className="w-56" forceMount>
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">Jane Doe</p>
-                      <p className="text-sm text-muted-foreground">
-                        jane.doe@example.com
-                      </p>
-                    </div>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenuPortal>
-            </DropdownMenu>
-          </div>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src="/placeholder.svg?height=32&width=32"
+                    alt="@user"
+                  />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            
+            <DropdownMenuContent 
+              align="end" 
+              className="w-56 mt-1 overflow-hidden" 
+              sideOffset={4}
+            >
+              <div className="flex items-center gap-2 p-2.5 pb-3 border-b border-border dark:border-border/60">
+                <Avatar className="h-12 w-12 shrink-0">
+                  <AvatarImage
+                    src="/placeholder.svg?height=40&width=40"
+                    alt="@user"
+                  />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col space-y-0.5 leading-none min-w-0">
+                  <p className="font-medium text-base truncate">Jane Doe</p>
+                  <p className="text-sm text-muted-foreground truncate max-w-[130px]">
+                    jane.doe@example.com
+                  </p>
+                </div>
+              </div>
+              
+              <div className="px-1 py-1 text-sm text-muted-foreground border-b border-border/40 mx-1 pb-2 mt-1">
+                Currently Online
+              </div>
+              
+              <div className="p-1">
+                <DropdownMenuItem className="my-0.5">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem className="my-0.5">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator className="my-1.5 bg-border/50" />
+                
+                <DropdownMenuItem className="my-0.5 text-destructive" variant="destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Menu button for sidebar - now on the right */}
           <Button
@@ -162,6 +176,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             <span className="sr-only">Menu</span>
           </Button>
         </div>
+        
         {/* Search Overlay */}
         <SearchOverlay
           isOpen={searchOverlayOpen}
