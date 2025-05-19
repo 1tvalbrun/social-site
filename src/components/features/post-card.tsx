@@ -48,7 +48,7 @@ export default function PostCard({ post }: PostProps) {
   };
 
   return (
-    <Card className="border border-gray-200 dark:border-gray-800">
+    <Card className="border border-gray-200 dark:border-border bg-white dark:bg-card">
       <CardHeader className="flex flex-row items-center justify-between p-4">
         <div className="flex items-center space-x-3">
           <Avatar>
@@ -59,8 +59,8 @@ export default function PostCard({ post }: PostProps) {
             <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-semibold">{post.user.name}</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="font-semibold text-foreground">{post.user.name}</div>
+            <div className="text-sm text-gray-500 dark:text-muted-foreground">
               @{post.user.username} · {post.timestamp}
             </div>
           </div>
@@ -81,7 +81,7 @@ export default function PostCard({ post }: PostProps) {
         </DropdownMenu>
       </CardHeader>
       <CardContent className="p-4 pt-0">
-        <p className="text-sm sm:text-base">{post.content}</p>
+        <p className="text-sm sm:text-base text-foreground">{post.content}</p>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -92,7 +92,7 @@ export default function PostCard({ post }: PostProps) {
             onClick={handleLike}
           >
             <Heart
-              className={`h-4 w-4 ${liked ? 'fill-red-500 text-red-500' : ''}`}
+              className={`h-4 w-4 ${liked ? 'fill-primary text-primary dark:fill-primary/90 dark:text-primary/90' : ''}`}
             />
             <span>{likeCount}</span>
           </Button>

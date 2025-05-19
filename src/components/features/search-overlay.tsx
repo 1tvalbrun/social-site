@@ -71,78 +71,87 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4">
-      <div className="bg-white dark:bg-gray-950 rounded-lg shadow-lg w-full max-w-2xl max-h-[70vh] overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center">
-          <SearchIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-          <Input
-            ref={inputRef}
-            type="search"
-            placeholder="Search for people, groups, or posts..."
-            className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-          />
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-5 w-5" />
-            <span className="sr-only">Close</span>
-          </Button>
-        </div>
+    <div className="fixed inset-0 z-50">
+      {/* Backdrop that darkens the entire page */}
+      <div 
+        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" 
+        onClick={onClose}
+      />
+      
+      {/* Search container - positioned at the top */}
+      <div className="relative w-full max-w-3xl mx-auto mt-16">
+        <div className="bg-white dark:bg-card rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-border">
+          <div className="p-4 border-b border-gray-200 dark:border-border flex items-center">
+            <SearchIcon className="h-5 w-5 text-gray-500 dark:text-muted-foreground mr-2" />
+            <Input
+              ref={inputRef}
+              type="search"
+              placeholder="Search for people, groups, or posts..."
+              className="flex-1 border-0 dark:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 dark:placeholder:text-muted-foreground/70"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </div>
 
-        <div className="overflow-y-auto flex-1 p-2">
-          {query.length > 0 && (
-            <>
-              {filteredResults.length > 0 ? (
-                <div className="space-y-2">
-                  {filteredResults.map(result => (
-                    <div
-                      key={result.id}
-                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md cursor-pointer"
-                    >
-                      {result.type !== 'post' ? (
-                        <div className="flex items-center space-x-3">
-                          <Avatar>
-                            <AvatarImage
-                              src={result.avatar || '/placeholder.svg'}
-                              alt={result.name || ''}
-                            />
-                            <AvatarFallback>
-                              {(result.name || '?').charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">{result.name}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {result.type === 'user'
-                                ? `@${result.username}`
-                                : result.description}
+          <div className="max-h-[60vh] overflow-y-auto">
+            {query.length > 0 && (
+              <>
+                {filteredResults.length > 0 ? (
+                  <div className="p-2 space-y-2">
+                    {filteredResults.map(result => (
+                      <div
+                        key={result.id}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-muted/40 rounded-md cursor-pointer"
+                      >
+                        {result.type !== 'post' ? (
+                          <div className="flex items-center space-x-3">
+                            <Avatar>
+                              <AvatarImage
+                                src={result.avatar || '/placeholder.svg'}
+                                alt={result.name || ''}
+                              />
+                              <AvatarFallback>
+                                {(result.name || '?').charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium text-foreground">{result.name}</div>
+                              <div className="text-sm text-gray-500 dark:text-muted-foreground">
+                                {result.type === 'user'
+                                  ? `@${result.username}`
+                                  : result.description}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <div className="text-sm font-medium">
-                            Post by {result.user}
+                        ) : (
+                          <div>
+                            <div className="text-sm font-medium text-foreground">
+                              Post by {result.user}
+                            </div>
+                            <div className="text-foreground">{result.content}</div>
                           </div>
-                          <div>{result.content}</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                  No results found for "{query}"
-                </div>
-              )}
-            </>
-          )}
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-gray-500 dark:text-muted-foreground">
+                    No results found for "{query}"
+                  </div>
+                )}
+              </>
+            )}
 
-          {query.length === 0 && (
-            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-              Start typing to search...
-            </div>
-          )}
+            {query.length === 0 && (
+              <div className="p-4 text-center text-gray-500 dark:text-muted-foreground">
+                Start typing to search...
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

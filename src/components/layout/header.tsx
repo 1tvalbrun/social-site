@@ -41,10 +41,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 z-30 px-4 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-card border-b border-gray-200 dark:border-border z-30 px-4 flex items-center justify-between backdrop-blur-sm dark:backdrop-blur-sm">
         {/* Left section */}
         <div className="flex items-center">
-          <div className="font-bold text-xl text-gray-900 dark:text-white">
+          <div className="font-bold text-xl text-gray-900 dark:text-foreground">
             SocialApp
           </div>
         </div>
@@ -52,11 +52,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
         {/* Search bar - hidden on very small screens */}
         <div className="hidden sm:flex relative mx-4 flex-1 max-w-md">
           <div className="relative w-full">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search..."
-              className="w-full pl-9 h-9"
+              className="w-full pl-9 h-9 border-gray-200 dark:border-border dark:bg-muted/20 dark:placeholder:text-muted-foreground/70 rounded-full focus-visible:ring-primary/30"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onFocus={() => setSearchOverlayOpen(true)}
@@ -81,7 +81,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             {notifications > 0 && (
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-white dark:bg-primary/90">
                 {notifications}
               </span>
             )}
@@ -96,7 +96,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           >
             {theme === 'dark' ? (
-              <Sun className="h-5 w-5" />
+              <Sun className="h-5 w-5 text-yellow-400" />
             ) : (
               <Moon className="h-5 w-5" />
             )}

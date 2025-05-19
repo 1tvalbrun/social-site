@@ -31,7 +31,7 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
   };
 
   return (
-    <Card className="border border-gray-200 dark:border-gray-800 mb-4">
+    <Card className="border border-gray-200 dark:border-border bg-white dark:bg-card mb-4">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <Avatar className="h-10 w-10">
@@ -44,7 +44,7 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
           <div className="flex-1">
             <Textarea
               placeholder="What's on your mind?"
-              className="min-h-[80px] border-gray-200 dark:border-gray-800 focus:border-primary"
+              className="min-h-[80px] border-gray-200 dark:border-border focus:border-primary"
               value={content}
               onChange={e => setContent(e.target.value)}
             />
@@ -56,7 +56,7 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-gray-500 dark:text-gray-400"
+            className="text-gray-500 dark:text-muted-foreground"
           >
             <ImageIcon className="h-4 w-4 mr-1" />
             Photo
@@ -64,7 +64,7 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-gray-500 dark:text-gray-400"
+            className="text-gray-500 dark:text-muted-foreground"
           >
             <Smile className="h-4 w-4 mr-1" />
             Feeling
@@ -72,7 +72,7 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-gray-500 dark:text-gray-400"
+            className="text-gray-500 dark:text-muted-foreground"
           >
             <MapPin className="h-4 w-4 mr-1" />
             Location
@@ -81,7 +81,6 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
         <Button
           onClick={handleSubmit}
           disabled={!content.trim() || isSubmitting}
-          className="ml-auto border border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800 bg-transparent text-gray-900 dark:text-white"
           variant="outline"
         >
           Post
