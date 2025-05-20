@@ -3,6 +3,7 @@ import { Button } from '@/components/common/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/common/card';
 import { Loader2 } from 'lucide-react';
 import { authenticate, isAuthenticated, logout } from '@/services/wordpress-api';
+import { Message } from '@/components/common/message';
 
 interface WordPressAuthFormProps {
   onSuccess?: () => void;
@@ -19,13 +20,15 @@ export default function WordPressAuthForm({ onSuccess, className }: WordPressAut
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Reset error before validation
+    setError(null);
+    
     if (!username.trim() || !password.trim()) {
       setError('Please provide both username and password');
       return;
     }
 
     setIsLoading(true);
-    setError(null);
     
     try {
       await authenticate({ username, password });
@@ -51,6 +54,10 @@ export default function WordPressAuthForm({ onSuccess, className }: WordPressAut
     logout();
     setIsLoggedIn(false);
   };
+  
+  const handleDismissError = () => {
+    setError(null);
+  };
 
   // Get user info if logged in
   const userInfo = isLoggedIn ? JSON.parse(localStorage.getItem('wp_user') || '{}') : null;
@@ -65,9 +72,12 @@ export default function WordPressAuthForm({ onSuccess, className }: WordPressAut
 
       {isLoggedIn ? (
         <CardContent className="space-y-4">
-          <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 rounded-md text-sm">
-            Logged in as <span className="font-semibold">{userInfo?.displayName || userInfo?.username}</span>
-          </div>
+          <Message
+            type="success"
+            message={`Logged in as ${userInfo?.displayName || userInfo?.username}`}
+            className="text-sm"
+            dismissible={false}
+          />
           
           <Button 
             variant="outline" 
@@ -80,11 +90,12 @@ export default function WordPressAuthForm({ onSuccess, className }: WordPressAut
       ) : (
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-md text-sm">
-                {error}
-              </div>
-            )}
+            <Message
+              type="error"
+              message={error || ''}
+              className="text-sm"
+              onDismiss={handleDismissError}
+            />
             
             <div className="space-y-2">
               <label htmlFor="username" className="text-sm font-medium text-foreground">

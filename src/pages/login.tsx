@@ -3,6 +3,10 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
 import { Input } from '@/components/common/input';
 import { Button } from '@/components/common/button';
+import { Message, MessageType } from '@/components/common/message';
+
+// Get the WordPress base URL from environment variables with fallback
+const WP_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'https://cms.icgjc.social';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -10,7 +14,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState<'error' | 'success' | ''>('');
+  const [messageType, setMessageType] = useState<MessageType>('');
   const [loading, setLoading] = useState(false);
 
   // If already authenticated, redirect to home
@@ -20,6 +24,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Always reset the message state before a new submission
     setMessage('');
     setMessageType('');
     
@@ -51,6 +57,11 @@ export default function LoginPage() {
     }
   };
 
+  const handleDismissMessage = () => {
+    setMessage('');
+    setMessageType('');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
       <div className="w-full max-w-md bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-border p-8 flex flex-col gap-6">
@@ -59,19 +70,12 @@ export default function LoginPage() {
           Please enter your WordPress credentials to continue
         </p>
         
-        {message && (
-          <div
-            className={`rounded-md px-4 py-2 text-sm mb-2 ${
-              messageType === 'error'
-                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-                : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-            }`}
-            role="alert"
-            aria-live="polite"
-          >
-            {message}
-          </div>
-        )}
+        <Message 
+          message={message} 
+          type={messageType} 
+          className="mb-2"
+          onDismiss={handleDismissMessage}
+        />
         
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
@@ -86,7 +90,7 @@ export default function LoginPage() {
               onChange={e => setUsername(e.target.value)}
               required
               className="w-full"
-              placeholder="Your WordPress username"
+              placeholder="Your username"
             />
           </div>
           <div>
@@ -101,7 +105,7 @@ export default function LoginPage() {
               onChange={e => setPassword(e.target.value)}
               required
               className="w-full"
-              placeholder="Your WordPress password"
+              placeholder="Your password"
             />
           </div>
           <Button
@@ -114,7 +118,7 @@ export default function LoginPage() {
         </form>
         <div className="flex flex-col gap-2 text-sm text-center mt-2">
           <a
-            href="https://cms.icgjc.social/wp-login.php?action=lostpassword"
+            href={`${WP_BASE_URL}/wp-login.php?action=lostpassword`}
             className="text-primary hover:underline focus:underline"
             target="_blank"
             rel="noopener noreferrer"

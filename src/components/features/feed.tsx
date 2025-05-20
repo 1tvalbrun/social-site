@@ -7,28 +7,53 @@ import { Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/common/button';
 import { useAuth } from '@/contexts/auth-context';
 import { getPosts, WordPressPost, createPost } from '@/services/wordpress-api';
+import { Message } from '@/components/common/message';
+
+// Number of posts to load per page
+const POSTS_PER_PAGE = 20;
 
 export default function Feed() {
   const [posts, setPosts] = useState<WordPressPost[]>([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const { isAuthenticated } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated, user } = useAuth();
   
-  // Fetch WordPress posts
+  // Fetch WordPress posts on initial load and refresh
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
+      setError(null);
+      
       try {
-        const fetchedPosts = await getPosts(1, 10); // Get first page of posts
+        console.log(`Fetching posts: page ${page}, per_page ${POSTS_PER_PAGE}`);
+        const fetchedPosts = await getPosts(1, POSTS_PER_PAGE);
+        
+        console.log(`Fetched ${fetchedPosts.length} posts`);
+        
+        // Log first post title for debugging
+        if (fetchedPosts.length > 0) {
+          console.log('First post title:', fetchedPosts[0]?.title?.rendered);
+        }
+        
         setPosts(fetchedPosts);
         setPage(1);
-        setHasMore(fetchedPosts.length === 10); // If we got 10 posts, there might be more
+        
+        // If we got fewer posts than requested, there are no more
+        setHasMore(fetchedPosts.length === POSTS_PER_PAGE);
       } catch (error) {
         console.error('Error fetching WordPress posts:', error);
+        if (error instanceof Error) {
+          setError(`Failed to load posts: ${error.message}`);
+        } else {
+          setError('Failed to load posts. Please try again later.');
+        }
       } finally {
         setLoading(false);
+        setInitialLoading(false);
       }
     };
     
@@ -51,6 +76,8 @@ export default function Feed() {
       return true;
     } catch (error) {
       console.error('Error creating post:', error);
+      
+      // Error is already handled in the CreatePostCard component
       return false;
     }
   };
@@ -67,29 +94,43 @@ export default function Feed() {
     setLoading(true);
     try {
       const nextPage = page + 1;
-      const morePosts = await getPosts(nextPage, 10);
+      console.log(`Loading more posts: page ${nextPage}, per_page ${POSTS_PER_PAGE}`);
+      const morePosts = await getPosts(nextPage, POSTS_PER_PAGE);
+      
+      console.log(`Loaded ${morePosts.length} additional posts`);
       
       if (morePosts.length > 0) {
-        setPosts([...posts, ...morePosts]);
+        setPosts(prevPosts => [...prevPosts, ...morePosts]);
         setPage(nextPage);
-        setHasMore(morePosts.length === 10);
+        setHasMore(morePosts.length === POSTS_PER_PAGE);
       } else {
         setHasMore(false);
       }
     } catch (error) {
       console.error('Error loading more posts:', error);
+      if (error instanceof Error) {
+        setError(`Failed to load more posts: ${error.message}`);
+      } else {
+        setError('Failed to load more posts. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  // Clear error message
+  const handleDismissError = () => {
+    setError(null);
   };
 
   // Detect when user scrolls to bottom
   useEffect(() => {
     const handleScroll = () => {
       if (
-        window.innerHeight + document.documentElement.scrollTop >=
-          document.documentElement.offsetHeight - 100 &&
-        !loading && hasMore
+        !loading && 
+        hasMore && 
+        window.innerHeight + document.documentElement.scrollTop >= 
+        document.documentElement.offsetHeight - 300
       ) {
         loadMorePosts();
       }
@@ -106,8 +147,20 @@ export default function Feed() {
         <CreatePostCard onPostSubmit={handlePostSubmit} />
       )}
       
+      {/* Error display */}
+      <Message
+        message={error || ''}
+        type="error"
+        title="Error"
+        className="mb-4"
+        onDismiss={handleDismissError}
+      />
+      
       {/* Refresh Button */}
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-sm text-muted-foreground">
+          {posts.length > 0 && `Showing ${posts.length} post${posts.length !== 1 ? 's' : ''}`}
+        </div>
         <Button
           variant="outline"
           size="sm"
@@ -122,18 +175,22 @@ export default function Feed() {
 
       {/* Posts Feed */}
       <div className="space-y-4">
-        {posts.length > 0 ? (
+        {initialLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : posts.length > 0 ? (
           posts.map(post => (
             <WordPressPostCard key={post.id} post={post} />
           ))
-        ) : !loading ? (
+        ) : (
           <div className="text-center py-8 text-muted-foreground">
             No posts found. {isAuthenticated ? 'Create your first post!' : 'Please log in to create posts.'}
           </div>
-        ) : null}
+        )}
         
-        {/* Loading indicator */}
-        {loading && (
+        {/* Loading indicator for pagination */}
+        {loading && !initialLoading && (
           <div className="flex justify-center py-4">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>

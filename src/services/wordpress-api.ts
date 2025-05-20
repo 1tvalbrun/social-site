@@ -1,7 +1,8 @@
 // WordPress API service
 
 // Define the base URL for the WordPress API
-const WP_API_URL = 'https://cms.icgjc.social/wp-json';
+const WP_API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'https://cms.icgjc.social';
+const WP_API_URL = `${WP_API_BASE_URL}/wp-json`;
 
 // WordPress post interface
 export interface WordPressPost {
