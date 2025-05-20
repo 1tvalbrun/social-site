@@ -7,27 +7,39 @@ import {
 import { Button } from '@/components/common/button';
 import { Card, CardContent, CardFooter } from '@/components/common/card';
 import { Textarea } from '@/components/common/textarea';
+import { Input } from '@/components/common/input';
 import { ImageIcon, Smile, MapPin } from 'lucide-react';
+import { useAuth } from '@/contexts/auth-context';
 
 interface CreatePostCardProps {
-  onPostSubmit: (content: string) => void;
+  onPostSubmit: (content: string, title: string) => Promise<boolean>;
 }
 
 export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
+  const { user } = useAuth();
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    if (!content.trim()) return;
+  const handleSubmit = async () => {
+    if (!content.trim() || !title.trim()) return;
 
     setIsSubmitting(true);
-
-    // Submit the post
-    onPostSubmit(content);
-
-    // Reset the form
-    setContent('');
-    setIsSubmitting(false);
+    
+    try {
+      // Submit to WordPress
+      const success = await onPostSubmit(content, title);
+      
+      if (success) {
+        // Reset the form
+        setContent('');
+        setTitle('');
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -36,12 +48,18 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
         <div className="flex items-start gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src="/placeholder.svg?height=40&width=40"
+              src={user?.avatar || "/placeholder.svg?height=40&width=40"}
               alt="Your avatar"
             />
-            <AvatarFallback>YA</AvatarFallback>
+            <AvatarFallback>{user?.name?.[0] || 'U'}</AvatarFallback>
           </Avatar>
-          <div className="flex-1">
+          <div className="flex-1 space-y-3">
+            <Input
+              placeholder="Title"
+              className="border-gray-200 dark:border-border focus:border-primary"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+            />
             <Textarea
               placeholder="What's on your mind?"
               className="min-h-[80px] border-gray-200 dark:border-border focus:border-primary"
@@ -80,10 +98,10 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
         </div>
         <Button
           onClick={handleSubmit}
-          disabled={!content.trim() || isSubmitting}
-          variant="outline"
+          disabled={!content.trim() || !title.trim() || isSubmitting}
+          variant={isSubmitting ? "secondary" : "outline"}
         >
-          Post
+          {isSubmitting ? 'Posting...' : 'Post'}
         </Button>
       </CardFooter>
     </Card>

@@ -7,7 +7,7 @@ import { Button } from '@/components/common/button';
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated, isLoading } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'error' | 'success' | ''>('');
@@ -18,39 +18,33 @@ export default function LoginPage() {
     return <Navigate to="/" replace />;
   }
 
-  function validateEmail(email: string) {
-    return /\S+@\S+\.\S+/.test(email);
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setMessageType('');
-    if (!email || !password) {
-      setMessage('Please enter both email and password.');
+    
+    if (!username || !password) {
+      setMessage('Please enter both username and password.');
       setMessageType('error');
       return;
     }
-    if (!validateEmail(email)) {
-      setMessage('Please enter a valid email address.');
-      setMessageType('error');
-      return;
-    }
+    
     setLoading(true);
     
     try {
-      const success = await login(email, password);
+      const success = await login(username, password);
       if (success) {
         setMessage('Login successful!');
         setMessageType('success');
         // Auth context will handle the authenticated state
         setTimeout(() => navigate('/'), 1000);
       } else {
-        setMessage('Incorrect email or password.');
+        setMessage('Incorrect username or password.');
         setMessageType('error');
       }
     } catch (error) {
-      setMessage('An error occurred during login.');
+      console.error('Login error:', error);
+      setMessage('An error occurred during login. Please check your credentials and try again.');
       setMessageType('error');
     } finally {
       setLoading(false);
@@ -60,7 +54,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
       <div className="w-full max-w-md bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-border p-8 flex flex-col gap-6">
-        <h1 className="text-2xl font-bold text-center mb-2">Sign in to your account</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">Sign in to WordPress</h1>
+        <p className="text-center text-muted-foreground">
+          Please enter your WordPress credentials to continue
+        </p>
+        
         {message && (
           <div
             className={`rounded-md px-4 py-2 text-sm mb-2 ${
@@ -74,20 +72,21 @@ export default function LoginPage() {
             {message}
           </div>
         )}
+        
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
+            <label htmlFor="username" className="block text-sm font-medium mb-1">
+              Username
             </label>
             <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              autoComplete="username"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
               required
               className="w-full"
-              placeholder="you@example.com"
+              placeholder="Your WordPress username"
             />
           </div>
           <div>
@@ -102,7 +101,7 @@ export default function LoginPage() {
               onChange={e => setPassword(e.target.value)}
               required
               className="w-full"
-              placeholder="Your password"
+              placeholder="Your WordPress password"
             />
           </div>
           <Button
@@ -114,23 +113,17 @@ export default function LoginPage() {
           </Button>
         </form>
         <div className="flex flex-col gap-2 text-sm text-center mt-2">
-          <button
-            type="button"
+          <a
+            href="https://cms.icgjc.social/wp-login.php?action=lostpassword"
             className="text-primary hover:underline focus:underline"
-            onClick={() => navigate('/forgot-password')}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Forgot your password?
-          </button>
-          <span className="text-muted-foreground">
-            Don&apos;t have an account?{' '}
-            <button
-              type="button"
-              className="text-primary hover:underline focus:underline"
-              onClick={() => navigate('/signup')}
-            >
-              Sign up
-            </button>
-          </span>
+          </a>
+          <p className="text-muted-foreground">
+            Don&apos;t have an account? Please contact your site administrator.
+          </p>
         </div>
       </div>
     </div>
