@@ -40,6 +40,7 @@ export const Message = React.forwardRef<
     }
   }, [message]);
 
+  // Early return pattern for conditional rendering
   if (!message || type === '' || dismissed) return null;
 
   // Determine styling based on message type

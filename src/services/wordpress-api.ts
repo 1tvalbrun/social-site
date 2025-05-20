@@ -438,5 +438,37 @@ export function logout(): void {
   localStorage.removeItem('wp_user');
 }
 
+/**
+ * Request a password reset
+ * @param email The user's email address
+ * @returns Promise that resolves to success message
+ */
+export async function requestPasswordReset(email: string): Promise<{ message: string }> {
+  try {
+    // WordPress REST API doesn't have a standard endpoint for this
+    // Most WordPress sites have plugins like "JWT Authentication for WP-API" or 
+    // similar that provide additional endpoints
+    
+    // This assumes you have a plugin or custom endpoint that handles password reset
+    const response = await fetch(`${WP_API_URL}/password-reset/v1/request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `Failed to request password reset: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error requesting password reset:', error);
+    throw error;
+  }
+}
+
 // Export API base URL
 export const apiUrl = WP_API_URL; 

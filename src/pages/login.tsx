@@ -1,23 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
 import { Input } from '@/components/common/input';
 import { Button } from '@/components/common/button';
 import { Message, MessageType } from '@/components/common/message';
 
-// Declare the window environment variables interface if not already declared
-declare global {
-  interface Window {
-    ENV?: {
-      NEXT_PUBLIC_WORDPRESS_API_URL?: string;
-    };
-  }
-}
-
-// Get the WordPress base URL from environment variables with fallback
+// Get the WordPress base URL from environment variables
 const WP_BASE_URL = import.meta.env.VITE_WORDPRESS_API_URL;
-// Get the WordPress lost password path from environment variables with fallback
-const WP_LOST_PASSWORD_PATH = import.meta.env.VITE_WORDPRESS_LOST_PASSWORD_PATH || '/wp-login.php?action=lostpassword';
+// Get the WordPress lost password path from environment variables
+const WP_LOST_PASSWORD_PATH = import.meta.env.VITE_WORDPRESS_LOST_PASSWORD_PATH;
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -28,7 +19,7 @@ export default function LoginPage() {
   const [messageType, setMessageType] = useState<MessageType>('');
   const [loading, setLoading] = useState(false);
 
-  // If already authenticated, redirect to home
+  // Early return pattern for conditional rendering
   if (isAuthenticated && !isLoading) {
     return <Navigate to="/" replace />;
   }
@@ -128,14 +119,12 @@ export default function LoginPage() {
           </Button>
         </form>
         <div className="flex flex-col gap-2 text-sm text-center mt-2">
-          <a
-            href={`${WP_BASE_URL}${WP_LOST_PASSWORD_PATH}`}
+          <Link
+            to="/forgot-password"
             className="text-primary hover:underline focus:underline"
-            target="_blank"
-            rel="noopener noreferrer"
           >
             Forgot your password?
-          </a>
+          </Link>
           <p className="text-muted-foreground">
             Don&apos;t have an account? Please contact your site administrator.
           </p>

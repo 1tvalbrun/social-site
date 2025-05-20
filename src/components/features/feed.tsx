@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import WordPressPostCard from '@/components/features/wordpress-post-card';
 import CreatePostCard from '@/components/features/create-post-card';
 import { Loader2, RefreshCw } from 'lucide-react';
@@ -22,73 +22,8 @@ export default function Feed() {
   const [error, setError] = useState<string | null>(null);
   const { isAuthenticated, user } = useAuth();
   
-  // Fetch WordPress posts on initial load and refresh
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        console.log(`Fetching posts: page ${page}, per_page ${POSTS_PER_PAGE}`);
-        const fetchedPosts = await getPosts(1, POSTS_PER_PAGE);
-        
-        console.log(`Fetched ${fetchedPosts.length} posts`);
-        
-        // Log first post title for debugging
-        if (fetchedPosts.length > 0) {
-          console.log('First post title:', fetchedPosts[0]?.title?.rendered);
-        }
-        
-        setPosts(fetchedPosts);
-        setPage(1);
-        
-        // If we got fewer posts than requested, there are no more
-        setHasMore(fetchedPosts.length === POSTS_PER_PAGE);
-      } catch (error) {
-        console.error('Error fetching WordPress posts:', error);
-        if (error instanceof Error) {
-          setError(`Failed to load posts: ${error.message}`);
-        } else {
-          setError('Failed to load posts. Please try again later.');
-        }
-      } finally {
-        setLoading(false);
-        setInitialLoading(false);
-      }
-    };
-    
-    fetchPosts();
-  }, [refreshTrigger]);
-
-  // Handle new post submission
-  const handlePostSubmit = async (content: string, title: string) => {
-    try {
-      // Create a new WordPress post
-      const newPost = await createPost({
-        title: title,
-        content: content,
-        status: 'publish'
-      });
-      
-      // Add the new post to the beginning of the posts array
-      setPosts([newPost, ...posts]);
-      
-      return true;
-    } catch (error) {
-      console.error('Error creating post:', error);
-      
-      // Error is already handled in the CreatePostCard component
-      return false;
-    }
-  };
-  
-  // Handle refresh of all posts
-  const handleRefresh = () => {
-    setRefreshTrigger(prev => prev + 1);
-  };
-
-  // Load more posts (for infinite scroll)
-  const loadMorePosts = async () => {
+  // Memoize functions that are dependencies in useEffect
+  const loadMorePosts = useCallback(async () => {
     if (loading || !hasMore) return;
     
     setLoading(true);
@@ -116,6 +51,72 @@ export default function Feed() {
     } finally {
       setLoading(false);
     }
+  }, [loading, hasMore, page]);
+  
+  // Fetch WordPress posts on initial load and refresh
+  const fetchPosts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log(`Fetching posts: page ${page}, per_page ${POSTS_PER_PAGE}`);
+      const fetchedPosts = await getPosts(1, POSTS_PER_PAGE);
+      
+      console.log(`Fetched ${fetchedPosts.length} posts`);
+      
+      // Log first post title for debugging
+      if (fetchedPosts.length > 0) {
+        console.log('First post title:', fetchedPosts[0]?.title?.rendered);
+      }
+      
+      setPosts(fetchedPosts);
+      setPage(1);
+      
+      // If we got fewer posts than requested, there are no more
+      setHasMore(fetchedPosts.length === POSTS_PER_PAGE);
+    } catch (error) {
+      console.error('Error fetching WordPress posts:', error);
+      if (error instanceof Error) {
+        setError(`Failed to load posts: ${error.message}`);
+      } else {
+        setError('Failed to load posts. Please try again later.');
+      }
+    } finally {
+      setLoading(false);
+      setInitialLoading(false);
+    }
+  }, []);
+    
+  useEffect(() => {
+    fetchPosts();
+  }, [refreshTrigger, fetchPosts]);
+
+  // Handle new post submission
+  const handlePostSubmit = async (content: string, title: string) => {
+    try {
+      // Create a new WordPress post
+      const newPost = await createPost({
+        title: title,
+        content: content,
+        status: 'publish'
+      });
+      
+      // Add the new post to the beginning of the posts array
+      // Using functional update to avoid closure issues
+      setPosts(prevPosts => [newPost, ...prevPosts]);
+      
+      return true;
+    } catch (error) {
+      console.error('Error creating post:', error);
+      
+      // Error is already handled in the CreatePostCard component
+      return false;
+    }
+  };
+  
+  // Handle refresh of all posts
+  const handleRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   // Clear error message
@@ -123,7 +124,7 @@ export default function Feed() {
     setError(null);
   };
 
-  // Detect when user scrolls to bottom
+  // Detect when user scrolls to bottom - using useCallback to memoize the event handler
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -138,7 +139,7 @@ export default function Feed() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, hasMore, page]);
+  }, [loading, hasMore, loadMorePosts]);
 
   return (
     <div className="py-4">
