@@ -5,8 +5,19 @@ import { Input } from '@/components/common/input';
 import { Button } from '@/components/common/button';
 import { Message, MessageType } from '@/components/common/message';
 
+// Declare the window environment variables interface if not already declared
+declare global {
+  interface Window {
+    ENV?: {
+      NEXT_PUBLIC_WORDPRESS_API_URL?: string;
+    };
+  }
+}
+
 // Get the WordPress base URL from environment variables with fallback
-const WP_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'https://cms.icgjc.social';
+const WP_BASE_URL = import.meta.env.VITE_WORDPRESS_API_URL;
+// Get the WordPress lost password path from environment variables with fallback
+const WP_LOST_PASSWORD_PATH = import.meta.env.VITE_WORDPRESS_LOST_PASSWORD_PATH || '/wp-login.php?action=lostpassword';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -118,7 +129,7 @@ export default function LoginPage() {
         </form>
         <div className="flex flex-col gap-2 text-sm text-center mt-2">
           <a
-            href={`${WP_BASE_URL}/wp-login.php?action=lostpassword`}
+            href={`${WP_BASE_URL}${WP_LOST_PASSWORD_PATH}`}
             className="text-primary hover:underline focus:underline"
             target="_blank"
             rel="noopener noreferrer"

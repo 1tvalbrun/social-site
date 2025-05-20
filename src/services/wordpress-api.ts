@@ -1,7 +1,16 @@
 // WordPress API service
 
+// Declare the window environment variables interface
+declare global {
+  interface Window {
+    ENV?: {
+      NEXT_PUBLIC_WORDPRESS_API_URL?: string;
+    };
+  }
+}
+
 // Define the base URL for the WordPress API
-const WP_API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'https://cms.icgjc.social';
+const WP_API_BASE_URL = import.meta.env.VITE_WORDPRESS_API_URL || 'https://cms.icgjc.social';
 const WP_API_URL = `${WP_API_BASE_URL}/wp-json`;
 
 // WordPress post interface
