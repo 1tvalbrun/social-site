@@ -1,16 +1,25 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { 
+  authenticate as wpAuthenticate, 
+  WordPressCredentials, 
+  isAuthenticated as isWpAuthenticated, 
+  logout as wpLogout,
+  getCurrentUser
+} from '@/services/wordpress-api';
 
 interface User {
-  id: string;
+  id: string | number | null;
   name: string;
-  email: string;
+  email?: string;
+  username: string;
+  avatar?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -20,48 +29,79 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is already logged in on mount
-  useEffect(() => {
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch (error) {
-          console.error('Error parsing stored user:', error);
-          localStorage.removeItem('user');
+  // Memoize the checkAuth function to avoid recreating it on every render
+  const checkAuth = useCallback(() => {
+    // Check WordPress auth status
+    if (isWpAuthenticated()) {
+      try {
+        const wpUser = getCurrentUser();
+        
+        if (wpUser) {
+          setUser({
+            id: wpUser.id || null,
+            name: wpUser.displayName || wpUser.username,
+            email: wpUser.email,
+            username: wpUser.username,
+            avatar: wpUser.avatarUrl
+          });
         }
+      } catch (error) {
+        console.error('Error parsing WordPress user:', error);
+        // If there's an error, log out
+        wpLogout();
+        setUser(null);
       }
-      setIsLoading(false);
-    };
-
-    checkAuth();
+    } else {
+      // Ensure user is null if not authenticated
+      setUser(null);
+    }
+    setIsLoading(false);
   }, []);
 
-  // Login function
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // For demo purposes - in a real app this would call an API
-    if (email === 'user@example.com' && password === 'password') {
-      const user = {
-        id: '1',
-        name: 'Jane Doe',
-        email: 'user@example.com',
-      };
+  // Check if user is already logged in on mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Login function using WordPress authentication - memoized to avoid recreating on render
+  const login = useCallback(async (username: string, password: string): Promise<boolean> => {
+    try {
+      // Use WordPress authentication only
+      const wpResponse = await wpAuthenticate({
+        username, 
+        password
+      });
       
-      // Store user in localStorage
-      localStorage.setItem('user', JSON.stringify(user));
-      setUser(user);
-      return true;
+      // If we reach here, WordPress auth was successful
+      const wpUser = getCurrentUser();
+      
+      if (wpUser) {
+        // Set the user in our app's context - functional update not needed as this isn't based on prev state
+        setUser({
+          id: wpUser.id || null,
+          name: wpUser.displayName || wpUser.username,
+          email: wpUser.email,
+          username: wpUser.username,
+          avatar: wpUser.avatarUrl
+        });
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-    return false;
-  };
+  }, []);
 
-  // Logout function
-  const logout = () => {
-    localStorage.removeItem('user');
+  // Logout function - memoized to maintain reference stability
+  const logout = useCallback(() => {
+    // WordPress logout
+    wpLogout();
     setUser(null);
-  };
+  }, []);
 
+  // Memoize the context value to prevent unnecessary re-renders of consumers
   const value = {
     user,
     isAuthenticated: !!user,

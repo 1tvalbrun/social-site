@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/common/input';
 import { Button } from '@/components/common/button';
+import { Message, MessageType } from '@/components/common/message';
+import { requestPasswordReset } from '@/services/wordpress-api';
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState<'error' | 'success' | ''>('');
+  const [messageType, setMessageType] = useState<MessageType>('');
   const [loading, setLoading] = useState(false);
 
   function validateEmail(email: string) {
@@ -32,12 +34,38 @@ export default function ForgotPasswordPage() {
     }
     
     setLoading(true);
-    // Placeholder password reset logic
-    setTimeout(() => {
-      setLoading(false);
-      setMessage('Password reset instructions have been sent to your email.');
+    
+    try {
+      // Call the WordPress API to request a password reset
+      const response = await requestPasswordReset(email);
+      
+      // Display success message
+      setMessage(response.message || 'Password reset instructions have been sent to your email.');
       setMessageType('success');
-    }, 1000);
+      
+      // Reset form
+      setEmail('');
+      
+      // After 3 seconds, redirect to login page
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
+    } catch (error) {
+      console.error('Password reset error:', error);
+      if (error instanceof Error) {
+        setMessage(error.message || 'An error occurred. Please try again later.');
+      } else {
+        setMessage('An error occurred. Please try again later.');
+      }
+      setMessageType('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleDismissMessage = () => {
+    setMessage('');
+    setMessageType('');
   };
 
   return (
@@ -48,19 +76,12 @@ export default function ForgotPasswordPage() {
           Enter your email address and we'll send you instructions to reset your password.
         </p>
         
-        {message && (
-          <div
-            className={`rounded-md px-4 py-2 text-sm mb-2 ${
-              messageType === 'error'
-                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-                : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-            }`}
-            role="alert"
-            aria-live="polite"
-          >
-            {message}
-          </div>
-        )}
+        <Message 
+          message={message} 
+          type={messageType} 
+          className="mb-2"
+          onDismiss={handleDismissMessage}
+        />
         
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>

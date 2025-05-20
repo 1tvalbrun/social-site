@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
 import SocialMediaHome from '@/components/layout/social-media-home';
 import LoginPage from '@/pages/login';
-import SignupPage from '@/pages/signup';
 import ForgotPasswordPage from '@/pages/forgot-password';
 
 // Protected route component
@@ -29,7 +28,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      {/* Redirect signup to login but render forgot-password page */}
+      <Route path="/signup" element={<Navigate to="/login" replace />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       {/* Protected route */}
       <Route 

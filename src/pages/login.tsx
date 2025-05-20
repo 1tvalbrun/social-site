@@ -1,93 +1,98 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
 import { Input } from '@/components/common/input';
 import { Button } from '@/components/common/button';
+import { Message, MessageType } from '@/components/common/message';
+
+// Get the WordPress base URL from environment variables
+const WP_BASE_URL = import.meta.env.VITE_WORDPRESS_API_URL;
+// Get the WordPress lost password path from environment variables
+const WP_LOST_PASSWORD_PATH = import.meta.env.VITE_WORDPRESS_LOST_PASSWORD_PATH;
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated, isLoading } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState<'error' | 'success' | ''>('');
+  const [messageType, setMessageType] = useState<MessageType>('');
   const [loading, setLoading] = useState(false);
 
-  // If already authenticated, redirect to home
+  // Early return pattern for conditional rendering
   if (isAuthenticated && !isLoading) {
     return <Navigate to="/" replace />;
   }
 
-  function validateEmail(email: string) {
-    return /\S+@\S+\.\S+/.test(email);
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Always reset the message state before a new submission
     setMessage('');
     setMessageType('');
-    if (!email || !password) {
-      setMessage('Please enter both email and password.');
+    
+    if (!username || !password) {
+      setMessage('Please enter both username and password.');
       setMessageType('error');
       return;
     }
-    if (!validateEmail(email)) {
-      setMessage('Please enter a valid email address.');
-      setMessageType('error');
-      return;
-    }
+    
     setLoading(true);
     
     try {
-      const success = await login(email, password);
+      const success = await login(username, password);
       if (success) {
         setMessage('Login successful!');
         setMessageType('success');
         // Auth context will handle the authenticated state
         setTimeout(() => navigate('/'), 1000);
       } else {
-        setMessage('Incorrect email or password.');
+        setMessage('Incorrect username or password.');
         setMessageType('error');
       }
     } catch (error) {
-      setMessage('An error occurred during login.');
+      console.error('Login error:', error);
+      setMessage('An error occurred during login. Please check your credentials and try again.');
       setMessageType('error');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleDismissMessage = () => {
+    setMessage('');
+    setMessageType('');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
       <div className="w-full max-w-md bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-border p-8 flex flex-col gap-6">
-        <h1 className="text-2xl font-bold text-center mb-2">Sign in to your account</h1>
-        {message && (
-          <div
-            className={`rounded-md px-4 py-2 text-sm mb-2 ${
-              messageType === 'error'
-                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-                : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-            }`}
-            role="alert"
-            aria-live="polite"
-          >
-            {message}
-          </div>
-        )}
+        <h1 className="text-2xl font-bold text-center mb-2">Sign in to WordPress</h1>
+        <p className="text-center text-muted-foreground">
+          Please enter your WordPress credentials to continue
+        </p>
+        
+        <Message 
+          message={message} 
+          type={messageType} 
+          className="mb-2"
+          onDismiss={handleDismissMessage}
+        />
+        
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
+            <label htmlFor="username" className="block text-sm font-medium mb-1">
+              Username
             </label>
             <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              autoComplete="username"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
               required
               className="w-full"
-              placeholder="you@example.com"
+              placeholder="Your username"
             />
           </div>
           <div>
@@ -114,23 +119,15 @@ export default function LoginPage() {
           </Button>
         </form>
         <div className="flex flex-col gap-2 text-sm text-center mt-2">
-          <button
-            type="button"
+          <Link
+            to="/forgot-password"
             className="text-primary hover:underline focus:underline"
-            onClick={() => navigate('/forgot-password')}
           >
             Forgot your password?
-          </button>
-          <span className="text-muted-foreground">
-            Don&apos;t have an account?{' '}
-            <button
-              type="button"
-              className="text-primary hover:underline focus:underline"
-              onClick={() => navigate('/signup')}
-            >
-              Sign up
-            </button>
-          </span>
+          </Link>
+          <p className="text-muted-foreground">
+            Don&apos;t have an account? Please contact your site administrator.
+          </p>
         </div>
       </div>
     </div>
