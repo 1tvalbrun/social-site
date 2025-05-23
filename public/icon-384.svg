@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 384" width="384" height="384">
+  <defs>
+    <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="192" cy="192" r="188" fill="url(#starGradient)" stroke="#1e40af" stroke-width="4"/>
+  
+  <!-- Star of David -->
+  <g transform="translate(192,192)">
+    <!-- First triangle (pointing up) -->
+    <polygon points="0,-60 51.89189189189189,30 -51.89189189189189,30" 
+             fill="white" 
+             stroke="white" 
+             stroke-width="3"/>
+    
+    <!-- Second triangle (pointing down) -->
+    <polygon points="0,60 -51.89189189189189,-30 51.89189189189189,-30" 
+             fill="white" 
+             stroke="white" 
+             stroke-width="3"/>
+  </g>
+</svg>
