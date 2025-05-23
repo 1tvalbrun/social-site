@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "prepare": "husky",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.9",
