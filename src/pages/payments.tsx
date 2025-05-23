@@ -1,10 +1,5 @@
 import * as React from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/common/card';
+import { Card, CardContent } from '@/components/common/card';
 import { Button } from '@/components/common/button';
 import Header from '@/components/layout/header';
 import { useNavigate } from 'react-router-dom';
