@@ -20,6 +20,7 @@ declare module '@/components/common/card' {
   export const CardHeader: any;
   export const CardTitle: any;
   export const CardFooter: any;
+  export const CardDescription: any;
 }
 
 declare module '@/components/layout/sidebar-content' {

@@ -59,7 +59,14 @@ export default function PostCard({ post }: PostProps) {
             <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-semibold text-foreground">{post.user.name}</div>
+            <div className="font-semibold text-foreground flex items-center gap-2">
+              {post.user.name}
+              {post.user.name === 'Jamie Chen' && (
+                <span className="bg-gray-900 text-white text-xs font-semibold px-2 py-0.5 rounded-full ml-1 dark:bg-gray-100 dark:text-gray-900">
+                  Minor
+                </span>
+              )}
+            </div>
             <div className="text-sm text-gray-500 dark:text-muted-foreground">
               @{post.user.username} · {post.timestamp}
             </div>

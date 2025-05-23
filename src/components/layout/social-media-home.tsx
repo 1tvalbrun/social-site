@@ -15,11 +15,9 @@ export default function SocialMediaHome() {
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Ensure theme is available on client side
   useEffect(() => {
     setMounted(true);
   }, []);
-
   if (!mounted) return null;
 
   return (

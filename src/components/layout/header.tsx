@@ -13,6 +13,7 @@ import {
   User,
   Settings,
   Search,
+  CreditCard,
 } from 'lucide-react';
 import {
   Avatar,
@@ -52,7 +53,19 @@ export default function Header({ onMenuClick }: HeaderProps) {
       <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-card border-b border-gray-200 dark:border-border z-30 px-4 flex items-center justify-between backdrop-blur-sm dark:backdrop-blur-sm">
         {/* Left section */}
         <div className="flex items-center">
-          <div className="font-bold text-xl text-gray-900 dark:text-foreground">
+          <div
+            className="font-bold text-xl text-gray-900 dark:text-foreground cursor-pointer focus:outline-none"
+            tabIndex={0}
+            role="button"
+            aria-label="Go to home"
+            onClick={() => navigate('/')}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navigate('/');
+              }
+            }}
+          >
             SocialApp
           </div>
         </div>
@@ -89,7 +102,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             {notifications > 0 && (
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-white dark:bg-primary/90">
+              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-white text-[10px] font-bold ring-2 ring-white dark:ring-gray-900">
                 {notifications}
               </span>
             )}
@@ -114,23 +127,22 @@ export default function Header({ onMenuClick }: HeaderProps) {
           {/* User profile dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full"
-              >
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
                     src="/placeholder.svg?height=32&width=32"
                     alt="@user"
                   />
-                  <AvatarFallback>{user?.name?.substring(0, 2) || 'JD'}</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.name?.substring(0, 2) || 'JD'}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            
-            <DropdownMenuContent 
-              align="end" 
-              className="w-56 mt-1 overflow-hidden" 
+
+            <DropdownMenuContent
+              align="end"
+              className="w-56 mt-1 overflow-hidden"
               sideOffset={4}
             >
               <div className="flex items-center gap-2 p-2.5 pb-3 border-b border-border dark:border-border/60">
@@ -139,35 +151,50 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     src="/placeholder.svg?height=40&width=40"
                     alt="@user"
                   />
-                  <AvatarFallback>{user?.name?.substring(0, 2) || 'JD'}</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.name?.substring(0, 2) || 'JD'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col space-y-0.5 leading-none min-w-0">
-                  <p className="font-medium text-base truncate">{user?.name || 'Jane Doe'}</p>
+                  <p className="font-medium text-base truncate">
+                    {user?.name || 'Jane Doe'}
+                  </p>
                   <p className="text-sm text-muted-foreground truncate max-w-[130px]">
                     {user?.email || 'jane.doe@example.com'}
                   </p>
                 </div>
               </div>
-              
+
               <div className="px-1 py-1 text-sm text-muted-foreground border-b border-border/40 mx-1 pb-2 mt-1">
                 Currently Online
               </div>
-              
+
               <div className="p-1">
                 <DropdownMenuItem className="my-0.5">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                
-                <DropdownMenuItem className="my-0.5">
+
+                <DropdownMenuItem
+                  className="my-0.5"
+                  onClick={() => navigate('/settings')}
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
-                
+
+                <DropdownMenuItem
+                  className="my-0.5"
+                  onClick={() => navigate('/payments')}
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  <span>Payments</span>
+                </DropdownMenuItem>
+
                 <DropdownMenuSeparator className="my-1.5 bg-border/50" />
-                
-                <DropdownMenuItem 
-                  className="my-0.5 text-destructive" 
+
+                <DropdownMenuItem
+                  className="my-0.5 text-destructive"
                   variant="destructive"
                   onClick={handleLogout}
                 >
@@ -189,7 +216,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             <span className="sr-only">Menu</span>
           </Button>
         </div>
-        
+
         {/* Search Overlay */}
         <SearchOverlay
           isOpen={searchOverlayOpen}
