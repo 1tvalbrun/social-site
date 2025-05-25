@@ -1,0 +1,24 @@
+# _redirects file for SPA routing
+# This file is crucial for making Single Page Applications work on static hosting
+# It ensures all unknown routes serve the index.html file so client-side routing can take over
+
+# CRITICAL: Handle root redirect first - this fixes icgjc.social not redirecting to /login
+/    /login    302!
+
+# Handle client-side routing for SPA (after root redirect)
+/*    /index.html   200
+
+# Specific routes for WordPress API (if needed)
+/wp-json/*  https://your-wordpress-site.com/wp-json/:splat  200
+/wp-admin/*  https://your-wordpress-site.com/wp-admin/:splat  200
+
+# Security headers
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# PWA service worker
+/sw.js   /sw.js   200
+/manifest.json   /manifest.json   200 

@@ -49,7 +49,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-card border-b border-gray-200 dark:border-border z-30 px-4 flex items-center justify-between backdrop-blur-sm dark:backdrop-blur-sm">
+      <header className="app-header fixed top-0 left-0 right-0 h-16 bg-white dark:bg-card border-b border-gray-200 dark:border-border z-30 px-4 flex items-center justify-between backdrop-blur-sm dark:backdrop-blur-sm">
         {/* Left section */}
         <div className="flex items-center">
           <div className="font-bold text-xl text-gray-900 dark:text-foreground">

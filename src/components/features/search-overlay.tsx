@@ -62,9 +62,9 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     query.length > 0
       ? searchResults.filter(
           result =>
-            result.name?.toLowerCase().includes(query.toLowerCase()) ||
-            result.description?.toLowerCase().includes(query.toLowerCase()) ||
-            result.content?.toLowerCase().includes(query.toLowerCase())
+            result?.name?.toLowerCase().includes(query.toLowerCase()) ||
+            result?.description?.toLowerCase().includes(query.toLowerCase()) ||
+            result?.content?.toLowerCase().includes(query.toLowerCase())
         )
       : [];
 
