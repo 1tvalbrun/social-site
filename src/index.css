@@ -13,6 +13,16 @@
     --card: 0 0% 100%;
     --card-foreground: 224 71.4% 4.1%;
     --border: 220 13% 91%;
+    
+    /* PWA Safe Area Support */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    
+    /* Status bar height fallbacks */
+    --status-bar-height: 44px; /* iOS */
+    --android-status-bar: 24px; /* Android */
   }
 
   .dark {
@@ -37,6 +47,165 @@
   }
 }
 
+/* PWA Safe Area Handling */
+@layer components {
+  /* Main app container safe area handling */
+  .app-container {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height */
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  /* Header spacing fix - ENHANCED for proper iPhone spacing */
+  .app-header {
+    /* Base padding for all modes - much more generous */
+    padding-top: calc(var(--safe-area-inset-top) + 24px);
+    padding-bottom: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    /* Ensure minimum spacing even without safe area detection */
+    min-height: 80px;
+  }
+
+  /* Bottom navigation safe area - ENHANCED for home indicator */
+  .bottom-navigation {
+    /* Base padding for all modes - much more generous */
+    padding-top: 12px;
+    padding-bottom: calc(var(--safe-area-inset-bottom) + 16px);
+    background: var(--background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    /* Ensure minimum spacing even without safe area detection */
+    min-height: 80px;
+  }
+
+  /* Main content area spacing */
+  .main-content {
+    padding-bottom: calc(96px + var(--safe-area-inset-bottom));
+  }
+}
+
+/* PWA-specific adjustments - ENHANCED with better spacing */
+@media (display-mode: standalone) {
+  .app-header {
+    /* Much more generous padding for PWA mode */
+    padding-top: calc(var(--safe-area-inset-top) + 32px);
+    background: rgba(255, 255, 255, 0.95);
+    min-height: 96px;
+  }
+  
+  .dark .app-header {
+    background: rgba(34, 41, 47, 0.95);
+  }
+  
+  .bottom-navigation {
+    /* Much more generous padding for PWA mode */
+    padding-top: 16px;
+    padding-bottom: calc(var(--safe-area-inset-bottom) + 24px);
+    background: rgba(255, 255, 255, 0.95);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    min-height: 96px;
+  }
+  
+  .dark .bottom-navigation {
+    background: rgba(34, 41, 47, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Prevent content from being hidden behind navigation */
+  .main-content {
+    padding-bottom: calc(112px + var(--safe-area-inset-bottom));
+  }
+}
+
+/* iOS specific adjustments - ENHANCED for iPhone models */
+@supports (-webkit-touch-callout: none) {
+  .app-header {
+    /* Generous iOS padding */
+    padding-top: calc(var(--safe-area-inset-top) + 28px);
+    min-height: 84px;
+  }
+  
+  .bottom-navigation {
+    /* Generous iOS bottom padding */
+    padding-bottom: calc(var(--safe-area-inset-bottom) + 20px);
+    min-height: 88px;
+  }
+  
+  @media (display-mode: standalone) {
+    .app-header {
+      /* Extra generous for iPhone PWA mode */
+      padding-top: calc(var(--safe-area-inset-top) + 36px);
+      min-height: 104px;
+    }
+    
+    .bottom-navigation {
+      /* Extra generous for iPhone PWA mode */
+      padding-bottom: calc(var(--safe-area-inset-bottom) + 28px);
+      min-height: 104px;
+    }
+    
+    .main-content {
+      padding-bottom: calc(120px + var(--safe-area-inset-bottom));
+    }
+  }
+}
+
+/* iPhone with notch/Dynamic Island specific fixes */
+@media (max-width: 430px) and (-webkit-touch-callout: none) {
+  .app-header {
+    /* Even more padding for iPhone models with notch */
+    padding-top: calc(var(--safe-area-inset-top) + 32px);
+    min-height: 92px;
+  }
+  
+  @media (display-mode: standalone) {
+    .app-header {
+      /* Maximum padding for iPhone PWA with notch */
+      padding-top: calc(var(--safe-area-inset-top) + 40px);
+      min-height: 112px;
+    }
+    
+    .bottom-navigation {
+      /* Maximum padding for iPhone PWA bottom */
+      padding-bottom: calc(var(--safe-area-inset-bottom) + 32px);
+      min-height: 112px;
+    }
+  }
+}
+
+/* PWA status bar styling */
+.pwa-mode {
+  --browser-ui-offset: 0px;
+}
+
+.pwa-mode .app-header {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
+}
+
+.dark .pwa-mode .app-header {
+  background: linear-gradient(135deg, rgba(34, 41, 47, 0.98) 0%, rgba(31, 41, 55, 0.95) 100%);
+}
+
+.pwa-mode .bottom-navigation {
+  background: rgba(255, 255, 255, 0.98);
+  border-top: 1px solid rgba(147, 51, 234, 0.2);
+}
+
+.dark .pwa-mode .bottom-navigation {
+  background: rgba(34, 41, 47, 0.98);
+  border-top: 1px solid rgba(147, 51, 234, 0.3);
+}
+
 /* Dropdown portal styles */
 #dropdown-portal {
   position: fixed;
@@ -49,4 +218,46 @@
 
 #dropdown-portal > * {
   pointer-events: auto;
+}
+
+/* Fallback spacing for when safe area detection fails */
+@layer utilities {
+  /* Force minimum spacing on any mobile device */
+  @media (max-width: 768px) {
+    .app-header {
+      /* Ensure minimum 20px from top on any mobile device */
+      padding-top: max(20px, calc(var(--safe-area-inset-top) + 16px)) !important;
+    }
+    
+    .bottom-navigation {
+      /* Ensure minimum 20px from bottom on any mobile device */
+      padding-bottom: max(20px, calc(var(--safe-area-inset-bottom) + 16px)) !important;
+    }
+  }
+  
+  /* Extra insurance for very small screens (iPhone SE, etc.) */
+  @media (max-width: 375px) {
+    .app-header {
+      padding-top: max(24px, calc(var(--safe-area-inset-top) + 20px)) !important;
+      min-height: 80px !important;
+    }
+    
+    .bottom-navigation {
+      padding-bottom: max(24px, calc(var(--safe-area-inset-bottom) + 20px)) !important;
+      min-height: 88px !important;
+    }
+  }
+  
+  /* Landscape mode adjustments */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .app-header {
+      padding-top: max(16px, calc(var(--safe-area-inset-top) + 12px)) !important;
+      min-height: 60px !important;
+    }
+    
+    .bottom-navigation {
+      padding-bottom: max(16px, calc(var(--safe-area-inset-bottom) + 12px)) !important;
+      min-height: 72px !important;
+    }
+  }
 }

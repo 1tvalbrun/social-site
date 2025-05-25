@@ -14,26 +14,37 @@ export default function SocialMediaHome() {
   const { theme } = useTheme();
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isPWA, setIsPWA] = useState(false);
 
   // Ensure theme is available on client side
   useEffect(() => {
     setMounted(true);
+    
+    // Detect PWA mode
+    const isPWAMode = window.matchMedia('(display-mode: standalone)').matches || 
+                     (window.navigator as any).standalone || 
+                     document.referrer.includes('android-app://');
+    setIsPWA(isPWAMode);
+    
+    if (isPWAMode) {
+      console.log('📱 PWA mode detected - applying safe area adjustments');
+    }
   }, []);
 
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-background text-gray-900 dark:text-gray-100">
+    <div className={`app-container ${isPWA ? 'pwa-mode' : ''} min-h-screen bg-gray-50 dark:bg-background text-gray-900 dark:text-gray-100`}>
       <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-      <div className="flex relative pt-16 pb-16 md:pb-0">
+      <div className="flex relative pt-20 pb-16 md:pb-0">
         {/* Left Sidebar - contains sponsored content, birthdays, etc. */}
-        <div className="hidden lg:block w-72 flex-shrink-0 sticky top-16 h-[calc(100vh-4rem)]">
+        <div className="hidden lg:block w-72 flex-shrink-0 sticky top-20 h-[calc(100vh-5rem)]">
           <SidebarContent />
         </div>
 
         {/* Main content */}
-        <div className="flex-1 max-w-2xl mx-auto px-4 w-full">
+        <div className="main-content flex-1 max-w-2xl mx-auto px-4 w-full">
           <Feed />
         </div>
 
@@ -42,7 +53,7 @@ export default function SocialMediaHome() {
           className={`${
             isMobile
               ? `fixed inset-0 z-40 transform ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-200 ease-in-out`
-              : 'sticky top-16 h-[calc(100vh-4rem)] w-72 flex-shrink-0'
+              : 'sticky top-20 h-[calc(100vh-5rem)] w-72 flex-shrink-0'
           }`}
         >
           {(sidebarOpen || !isMobile) && (

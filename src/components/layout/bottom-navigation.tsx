@@ -2,7 +2,7 @@ import { Home, Users, Grid, Bell, User } from 'lucide-react';
 
 export default function BottomNavigation() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-card border-t border-gray-200 dark:border-border flex items-center justify-around md:hidden z-30 backdrop-blur-sm dark:backdrop-blur-sm">
+    <div className="bottom-navigation fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-card border-t border-gray-200 dark:border-border flex items-center justify-around md:hidden z-30 backdrop-blur-sm dark:backdrop-blur-sm">
       <a
         href="#"
         className="flex flex-col items-center justify-center w-full h-full text-primary"

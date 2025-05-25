@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICGJC App - Routing Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .test-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 8px 16px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #results { margin-top: 20px; }
+        .route-test { margin: 5px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>ICGJC App - Deployment Testing</h1>
+    
+    <div class="test-item">
+        <h3>🔧 Routing Tests</h3>
+        <p>Test different routes to ensure they work correctly:</p>
+        
+        <button onclick="testRoute('/')">Test Root Route (/)</button>
+        <button onclick="testRoute('/login')">Test Login Route (/login)</button>
+        <button onclick="testRoute('/manifest.json')">Test Manifest</button>
+        <button onclick="testRoute('/sw.js')">Test Service Worker</button>
+        <button onclick="testRoute('/icon-192.png')">Test Icon</button>
+        
+        <div id="results"></div>
+    </div>
+    
+    <div class="test-item">
+        <h3>📱 PWA Tests</h3>
+        <p>Check PWA functionality:</p>
+        
+        <button onclick="checkPWASupport()">Check PWA Support</button>
+        <button onclick="checkServiceWorker()">Check Service Worker</button>
+        <button onclick="checkManifest()">Check Manifest</button>
+        
+        <div id="pwa-results"></div>
+    </div>
+    
+    <div class="test-item">
+        <h3>🌐 Deployment Checklist</h3>
+        <ul>
+            <li>✅ Root route (/) should redirect to /login</li>
+            <li>✅ Direct /login access should work</li>
+            <li>✅ Service Worker should register successfully</li>
+            <li>✅ Manifest.json should be accessible</li>
+            <li>✅ Icons should load correctly</li>
+            <li>✅ PWA install prompt should work on mobile</li>
+            <li>✅ Offline functionality should work</li>
+        </ul>
+    </div>
+
+    <script>
+        const baseUrl = window.location.protocol + '//' + window.location.hostname + ':4173';
+        
+        async function testRoute(path) {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                const response = await fetch(baseUrl + path, { 
+                    method: 'HEAD',
+                    mode: 'cors'
+                });
+                
+                const result = document.createElement('div');
+                result.className = 'route-test';
+                
+                if (response.ok) {
+                    result.innerHTML = `✅ ${path} - Status: ${response.status}`;
+                    result.style.color = 'green';
+                } else {
+                    result.innerHTML = `❌ ${path} - Status: ${response.status}`;
+                    result.style.color = 'red';
+                }
+                
+                resultsDiv.appendChild(result);
+                
+            } catch (error) {
+                const result = document.createElement('div');
+                result.className = 'route-test';
+                result.innerHTML = `❌ ${path} - Error: ${error.message}`;
+                result.style.color = 'red';
+                resultsDiv.appendChild(result);
+            }
+        }
+        
+        function checkPWASupport() {
+            const pwaResults = document.getElementById('pwa-results');
+            const result = document.createElement('div');
+            
+            const checks = [
+                { name: 'Service Worker Support', test: 'serviceWorker' in navigator },
+                { name: 'Manifest Support', test: 'Notification' in window },
+                { name: 'HTTPS (Required)', test: window.location.protocol === 'https:' || window.location.hostname === 'localhost' },
+                { name: 'Cache API', test: 'caches' in window },
+                { name: 'Push Messaging', test: 'PushManager' in window }
+            ];
+            
+            result.innerHTML = '<h4>PWA Support Check:</h4>';
+            checks.forEach(check => {
+                const status = check.test ? '✅' : '❌';
+                result.innerHTML += `<div>${status} ${check.name}</div>`;
+            });
+            
+            pwaResults.appendChild(result);
+        }
+        
+        async function checkServiceWorker() {
+            const pwaResults = document.getElementById('pwa-results');
+            const result = document.createElement('div');
+            
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        result.innerHTML = `✅ Service Worker registered: ${registration.scope}`;
+                        result.style.color = 'green';
+                    } else {
+                        result.innerHTML = `⚠️ Service Worker not yet registered`;
+                        result.style.color = 'orange';
+                    }
+                } catch (error) {
+                    result.innerHTML = `❌ Service Worker error: ${error.message}`;
+                    result.style.color = 'red';
+                }
+            } else {
+                result.innerHTML = `❌ Service Worker not supported`;
+                result.style.color = 'red';
+            }
+            
+            pwaResults.appendChild(result);
+        }
+        
+        async function checkManifest() {
+            const pwaResults = document.getElementById('pwa-results');
+            const result = document.createElement('div');
+            
+            try {
+                const response = await fetch('/manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    result.innerHTML = `✅ Manifest loaded: ${manifest.name} (${manifest.start_url})`;
+                    result.style.color = 'green';
+                } else {
+                    result.innerHTML = `❌ Manifest not accessible: ${response.status}`;
+                    result.style.color = 'red';
+                }
+            } catch (error) {
+                result.innerHTML = `❌ Manifest error: ${error.message}`;
+                result.style.color = 'red';
+            }
+            
+            pwaResults.appendChild(result);
+        }
+        
+        // Auto-run basic tests on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                checkPWASupport();
+                checkServiceWorker();
+                checkManifest();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

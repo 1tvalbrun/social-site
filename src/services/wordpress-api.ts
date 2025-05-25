@@ -384,7 +384,30 @@ export async function authenticate(credentials: WordPressCredentials): Promise<a
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Authentication failed:', errorData);
-      throw new Error(errorData.message || 'Authentication failed');
+      
+      // Parse and clean the error message to remove HTML and make it user-friendly
+      let errorMessage = errorData.message || 'Authentication failed';
+      
+      // Clean HTML tags from error message
+      errorMessage = errorMessage.replace(/<[^>]*>/g, '');
+      
+      // Decode HTML entities
+      const textArea = document.createElement('textarea');
+      textArea.innerHTML = errorMessage;
+      errorMessage = textArea.value;
+      
+      // Common WordPress authentication error message improvements
+      if (errorMessage.includes('password you entered')) {
+        errorMessage = 'The password you entered is incorrect. Please check your credentials and try again.';
+      } else if (errorMessage.includes('username') && errorMessage.includes('incorrect')) {
+        errorMessage = 'The username or password you entered is incorrect. Please check your credentials and try again.';
+      } else if (errorMessage.includes('Unknown user')) {
+        errorMessage = 'The username you entered was not found. Please check your username and try again.';
+      } else if (errorMessage.includes('invalid')) {
+        errorMessage = 'Invalid username or password. Please check your credentials and try again.';
+      }
+      
+      throw new Error(errorMessage);
     }
     
     const data = await response.json() as TokenResponse;
@@ -394,7 +417,7 @@ export async function authenticate(credentials: WordPressCredentials): Promise<a
     const token = data.token || data.jwt_token || data.data?.token || '';
     if (!token) {
       console.error('No token found in response:', data);
-      throw new Error('No authentication token found in response');
+      throw new Error('Authentication successful but no token received. Please contact support.');
     }
     
     // Extract user info if available
@@ -419,7 +442,13 @@ export async function authenticate(credentials: WordPressCredentials): Promise<a
     return data;
   } catch (error) {
     console.error('WordPress authentication error:', error);
-    throw error;
+    
+    // Ensure we throw a clean error message
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error('Authentication failed. Please check your credentials and try again.');
+    }
   }
 }
 
