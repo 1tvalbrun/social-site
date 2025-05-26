@@ -16,10 +16,10 @@ VITE_WORDPRESS_LOST_PASSWORD_PATH=/wp-login.php?action=lostpassword
 
 ## Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `VITE_WORDPRESS_API_URL` | The base URL for the WordPress site | `https://cms.icgjc.social` |
-| `VITE_WORDPRESS_LOST_PASSWORD_PATH` | The path for password recovery | `/wp-login.php?action=lostpassword` |
+| Variable                            | Description                         | Example                             |
+| ----------------------------------- | ----------------------------------- | ----------------------------------- |
+| `VITE_WORDPRESS_API_URL`            | The base URL for the WordPress site | `https://cms.icgjc.social`          |
+| `VITE_WORDPRESS_LOST_PASSWORD_PATH` | The path for password recovery      | `/wp-login.php?action=lostpassword` |
 
 ## Implementation Details
 
@@ -37,7 +37,8 @@ In your React components:
 
 ```tsx
 // Access the environment variable with fallback
-const WP_API_URL = import.meta.env.VITE_WORDPRESS_API_URL || 'https://cms.icgjc.social';
+const WP_API_URL =
+  import.meta.env.VITE_WORDPRESS_API_URL || 'https://cms.icgjc.social';
 ```
 
 ## Type Safety
@@ -49,16 +50,16 @@ For TypeScript type safety, you can add type definitions for your custom environ
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_WORDPRESS_API_URL: string
+  readonly VITE_WORDPRESS_API_URL: string;
   // more env variables...
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv
+  readonly env: ImportMetaEnv;
 }
 ```
 
 ## Security Notes
 
 - Never expose sensitive information through environment variables prefixed with `VITE_`, as these will be included in your client bundle
-- For sensitive values, use server-side environment variables without the `VITE_` prefix 
+- For sensitive values, use server-side environment variables without the `VITE_` prefix
