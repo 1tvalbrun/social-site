@@ -20,6 +20,9 @@ export interface WordPressPost {
   slug: string;
   link: string;
   name: string;
+  bp_media_ids: any[];
+  bp_videos: any[];
+  attachment_data: any[];
   can_report: boolean;
   reported: boolean;
   report_button_text: string;
@@ -299,10 +302,12 @@ export async function deleteBuddyBossPost(postId: number) {
 }
 
 export async function getCommentsBuddyBoss(activityId: number) {
-  const response = await fetch(`${WP_API_URL}/buddyboss/v1/activity/${activityId}/comments`);
+  const response = await fetch(`${WP_API_URL}/buddyboss/v1/activity?type=activity_comment&primary_item_id=${activityId}&per_page=100`);
   if (!response.ok) throw new Error('Failed to fetch comments');
   return await response.json();
 }
+
+
 
 export async function addCommentBuddyBoss(activityId: number, content: string, token: string) {
   const response = await fetch(`${WP_API_URL}/buddyboss/v1/activity`, {

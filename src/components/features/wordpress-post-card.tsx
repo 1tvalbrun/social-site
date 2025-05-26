@@ -21,6 +21,7 @@ import {
   getComments,
   addComment,
   handleReport,
+  getCommentsBuddyBoss,
 } from '@/services/wordpress-api';
 import {
   Avatar,
@@ -151,7 +152,7 @@ export default function WordPressPostCard({
 
     setLoadingComments(true);
     try {
-      const postComments = await getComments(post.id);
+      const postComments = await getCommentsBuddyBoss(post.id);
       setComments(postComments);
     } catch (error) {
       console.error('Error loading comments:', error);
@@ -237,6 +238,26 @@ export default function WordPressPostCard({
             </button>
           </CardTitle>
         </CardHeader>
+        {post.bp_media_ids?.map(media => (
+          <img
+            key={media.id}
+            src={media.attachment_data?.activity_thumb}
+            alt={media.title}
+            className="w-full rounded-md mt-4"
+          />
+        ))}
+
+        {post.bp_videos?.map(video => (
+          <video
+            key={video.id}
+            controls
+            poster={video.attachment_data?.video_activity_thumb}
+            className="w-full mt-4 rounded-md"
+          >
+            <source src={video.download_url} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ))}
 
         {/* Featured image if available */}
         {featuredImage && (
