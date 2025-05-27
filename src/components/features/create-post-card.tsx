@@ -1,4 +1,7 @@
 import { useState } from 'react';
+
+import { ImageIcon, MapPin, Smile } from 'lucide-react';
+
 import {
   Avatar,
   AvatarFallback,
@@ -7,7 +10,6 @@ import {
 import { Button } from '@/components/common/button';
 import { Card, CardContent, CardFooter } from '@/components/common/card';
 import { Textarea } from '@/components/common/textarea';
-import { ImageIcon, Smile, MapPin } from 'lucide-react';
 
 interface CreatePostCardProps {
   onPostSubmit: (content: string) => void;
@@ -46,7 +48,9 @@ export default function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
               placeholder="What's on your mind?"
               className="min-h-[80px] border-gray-200 dark:border-border focus:border-primary"
               value={content}
-              onChange={e => setContent(e.target.value)}
+              onChange={(e) => {
+                setContent(e.target.value);
+              }}
             />
           </div>
         </div>

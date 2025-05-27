@@ -1,4 +1,7 @@
 import { useState } from 'react';
+
+import { Flag, Heart, MessageCircle, MoreHorizontal } from 'lucide-react';
+
 import {
   Avatar,
   AvatarFallback,
@@ -11,7 +14,6 @@ import {
   CardFooter,
   CardHeader,
 } from '@/components/common/card';
-import { Heart, MessageCircle, Flag, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,7 +76,10 @@ export default function PostCard({ post }: PostProps) {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+            >
               <MoreHorizontal className="h-4 w-4" />
               <span className="sr-only">More options</span>
             </Button>

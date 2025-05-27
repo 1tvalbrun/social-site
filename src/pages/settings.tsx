@@ -1,8 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import { Tabs, TabsList, TabsTrigger } from '@/components/common/tabs';
+
+import { ArrowLeft, Bell, Moon, Shield, User } from 'lucide-react';
+
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/common/avatar';
+import { Button } from '@/components/common/button';
 import {
   Card,
   CardContent,
@@ -11,34 +20,31 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/common/card';
-
 import { Input } from '@/components/common/input';
 import { Label } from '@/components/common/label';
-import { Button } from '@/components/common/button';
-import { Switch } from '@/components/common/switch';
 import { Separator } from '@/components/common/separator';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/common/avatar';
-import { ArrowLeft, Bell, Moon, Shield, User } from 'lucide-react';
+import { Switch } from '@/components/common/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/components/common/tabs';
 import Header from '@/components/layout/header';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('account');
 
+  const handleBackToProfile = () => {
+    void navigate('/profile');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <Header onMenuClick={() => {}} />
+      <Header onMenuClick={() => undefined} />
 
       <div className="container mx-auto pt-20 pb-10 px-4">
         <div className="flex items-center mb-6">
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(-1)}
+            onClick={handleBackToProfile}
             className="mr-2"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -56,7 +62,9 @@ export default function SettingsPage() {
                   <Button
                     variant="ghost"
                     className={`justify-start rounded-none h-12 text-base flex items-center gap-3 transition-all ${activeTab === 'account' ? 'bg-gray-100 dark:bg-gray-800 font-semibold border-l-4 border-gray-900 dark:border-gray-100' : 'pl-2 text-gray-900 dark:text-gray-100'}`}
-                    onClick={() => setActiveTab('account')}
+                    onClick={() => {
+                      setActiveTab('account');
+                    }}
                     aria-current={activeTab === 'account' ? 'page' : undefined}
                   >
                     <User className="mr-2 h-4 w-4" />
@@ -65,7 +73,9 @@ export default function SettingsPage() {
                   <Button
                     variant="ghost"
                     className={`justify-start rounded-none h-12 text-base flex items-center gap-3 transition-all ${activeTab === 'notifications' ? 'bg-gray-100 dark:bg-gray-800 font-semibold border-l-4 border-gray-900 dark:border-gray-100' : 'pl-2 text-gray-900 dark:text-gray-100'}`}
-                    onClick={() => setActiveTab('notifications')}
+                    onClick={() => {
+                      setActiveTab('notifications');
+                    }}
                     aria-current={
                       activeTab === 'notifications' ? 'page' : undefined
                     }
@@ -76,7 +86,9 @@ export default function SettingsPage() {
                   <Button
                     variant="ghost"
                     className={`justify-start rounded-none h-12 text-base flex items-center gap-3 transition-all ${activeTab === 'appearance' ? 'bg-gray-100 dark:bg-gray-800 font-semibold border-l-4 border-gray-900 dark:border-gray-100' : 'pl-2 text-gray-900 dark:text-gray-100'}`}
-                    onClick={() => setActiveTab('appearance')}
+                    onClick={() => {
+                      setActiveTab('appearance');
+                    }}
                     aria-current={
                       activeTab === 'appearance' ? 'page' : undefined
                     }
@@ -87,7 +99,9 @@ export default function SettingsPage() {
                   <Button
                     variant="ghost"
                     className={`justify-start rounded-none h-12 text-base flex items-center gap-3 transition-all ${activeTab === 'security' ? 'bg-gray-100 dark:bg-gray-800 font-semibold border-l-4 border-gray-900 dark:border-gray-100' : 'pl-2 text-gray-900 dark:text-gray-100'}`}
-                    onClick={() => setActiveTab('security')}
+                    onClick={() => {
+                      setActiveTab('security');
+                    }}
                     aria-current={activeTab === 'security' ? 'page' : undefined}
                   >
                     <Shield className="mr-2 h-4 w-4" />
@@ -141,10 +155,16 @@ export default function SettingsPage() {
                       <div className="space-y-2">
                         <h3 className="font-medium">Profile Picture</h3>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                          >
                             Upload new
                           </Button>
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                          >
                             Remove
                           </Button>
                         </div>
@@ -262,15 +282,24 @@ export default function SettingsPage() {
                         <Label htmlFor="email-comments">
                           Comments on your posts
                         </Label>
-                        <Switch id="email-comments" defaultChecked />
+                        <Switch
+                          id="email-comments"
+                          defaultChecked
+                        />
                       </div>
                       <div className="flex items-center justify-between">
                         <Label htmlFor="email-tags">When you're tagged</Label>
-                        <Switch id="email-tags" defaultChecked />
+                        <Switch
+                          id="email-tags"
+                          defaultChecked
+                        />
                       </div>
                       <div className="flex items-center justify-between">
                         <Label htmlFor="email-follows">New followers</Label>
-                        <Switch id="email-follows" defaultChecked />
+                        <Switch
+                          id="email-follows"
+                          defaultChecked
+                        />
                       </div>
                       <div className="flex items-center justify-between">
                         <Label htmlFor="email-messages">Direct messages</Label>
@@ -288,19 +317,31 @@ export default function SettingsPage() {
                         <Label htmlFor="push-comments">
                           Comments on your posts
                         </Label>
-                        <Switch id="push-comments" defaultChecked />
+                        <Switch
+                          id="push-comments"
+                          defaultChecked
+                        />
                       </div>
                       <div className="flex items-center justify-between">
                         <Label htmlFor="push-tags">When you're tagged</Label>
-                        <Switch id="push-tags" defaultChecked />
+                        <Switch
+                          id="push-tags"
+                          defaultChecked
+                        />
                       </div>
                       <div className="flex items-center justify-between">
                         <Label htmlFor="push-follows">New followers</Label>
-                        <Switch id="push-follows" defaultChecked />
+                        <Switch
+                          id="push-follows"
+                          defaultChecked
+                        />
                       </div>
                       <div className="flex items-center justify-between">
                         <Label htmlFor="push-messages">Direct messages</Label>
-                        <Switch id="push-messages" defaultChecked />
+                        <Switch
+                          id="push-messages"
+                          defaultChecked
+                        />
                       </div>
                     </div>
                   </div>
@@ -326,19 +367,19 @@ export default function SettingsPage() {
                     <div className="grid grid-cols-3 gap-4">
                       <div className="flex flex-col items-center gap-2">
                         <div className="border border-gray-200 dark:border-gray-800 rounded-md p-2 cursor-pointer bg-white">
-                          <div className="w-full h-24 bg-white rounded-md border border-gray-200"></div>
+                          <div className="w-full h-24 bg-white rounded-md border border-gray-200" />
                         </div>
                         <span className="text-sm">Light</span>
                       </div>
                       <div className="flex flex-col items-center gap-2">
                         <div className="border border-gray-200 dark:border-gray-800 rounded-md p-2 cursor-pointer bg-gray-950">
-                          <div className="w-full h-24 bg-gray-950 rounded-md border border-gray-800"></div>
+                          <div className="w-full h-24 bg-gray-950 rounded-md border border-gray-800" />
                         </div>
                         <span className="text-sm">Dark</span>
                       </div>
                       <div className="flex flex-col items-center gap-2">
                         <div className="border border-gray-200 dark:border-gray-800 rounded-md p-2 cursor-pointer bg-gradient-to-b from-white to-gray-950">
-                          <div className="w-full h-24 bg-gradient-to-b from-white to-gray-950 rounded-md border border-gray-300"></div>
+                          <div className="w-full h-24 bg-gradient-to-b from-white to-gray-950 rounded-md border border-gray-300" />
                         </div>
                         <span className="text-sm">System</span>
                       </div>
@@ -361,17 +402,26 @@ export default function SettingsPage() {
                 <CardContent className="space-y-4">
                   <div className="grid gap-2">
                     <Label htmlFor="current-password">Current password</Label>
-                    <Input id="current-password" type="password" />
+                    <Input
+                      id="current-password"
+                      type="password"
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="new-password">New password</Label>
-                    <Input id="new-password" type="password" />
+                    <Input
+                      id="new-password"
+                      type="password"
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="confirm-password">
                       Confirm new password
                     </Label>
-                    <Input id="confirm-password" type="password" />
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                    />
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end">

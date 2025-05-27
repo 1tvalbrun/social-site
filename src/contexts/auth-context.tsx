@@ -1,82 +1,67 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { AuthContext, type User } from './auth-context-types';
 
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is already logged in on mount
   useEffect(() => {
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch (error) {
-          console.error('Error parsing stored user:', error);
-          localStorage.removeItem('user');
-        }
-      }
+    // Check for stored auth token
+    const token = localStorage.getItem('token');
+    if (token === null || token === '') {
       setIsLoading(false);
-    };
+      return;
+    }
 
-    checkAuth();
+    // Simulate user data fetch
+    const storedUser = localStorage.getItem('user');
+    if (storedUser !== null && storedUser !== '') {
+      try {
+        const parsedUser = JSON.parse(storedUser) as User;
+        setUser(parsedUser);
+      } catch {
+        setUser(null);
+      }
+    }
+    setIsLoading(false);
   }, []);
 
-  // Login function
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // For demo purposes - in a real app this would call an API
-    if (email === 'user@example.com' && password === 'password') {
-      const user = {
-        id: '1',
-        name: 'Jane Doe',
-        email: 'user@example.com',
-      };
-      
-      // Store user in localStorage
-      localStorage.setItem('user', JSON.stringify(user));
-      setUser(user);
-      return true;
-    }
-    return false;
-  };
-
-  // Logout function
+  const login = async (email: string, password: string): Promise<boolean> =>
+    // Simulate API call
+    new Promise((resolve) => {
+      setTimeout(() => {
+        if (email === 'test@example.com' && password === 'password') {
+          const newUser: User = {
+            id: '1',
+            name: 'Test User',
+            email: 'test@example.com',
+          };
+          setUser(newUser);
+          localStorage.setItem('user', JSON.stringify(newUser));
+          localStorage.setItem('token', 'dummy-token');
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }, 1000);
+    });
   const logout = () => {
-    localStorage.removeItem('user');
     setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
-  const value = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    logout,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthenticated: user !== null,
+      isLoading,
+      login,
+      logout,
+    }),
+    [user, isLoading],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-} 

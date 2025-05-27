@@ -1,7 +1,9 @@
 import { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import { Input } from '@/components/common/input';
+
 import { Button } from '@/components/common/button';
+import { Input } from '@/components/common/input';
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -14,41 +16,55 @@ export default function ForgotPasswordPage() {
     return /\S+@\S+\.\S+/.test(email);
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setMessageType('');
-    
+
     if (!email) {
       setMessage('Please enter your email address.');
       setMessageType('error');
       return;
     }
-    
+
     if (!validateEmail(email)) {
       setMessage('Please enter a valid email address.');
       setMessageType('error');
       return;
     }
-    
+
     setLoading(true);
-    // Placeholder password reset logic
+    // Simulate API call
     setTimeout(() => {
       setLoading(false);
       setMessage('Password reset instructions have been sent to your email.');
       setMessageType('success');
+      setTimeout(() => {
+        void navigate('/login');
+      }, 2000);
     }, 1000);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handleBackToLogin = () => {
+    void navigate('/login');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
       <div className="w-full max-w-md bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-border p-8 flex flex-col gap-6">
-        <h1 className="text-2xl font-bold text-center mb-2">Reset your password</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">
+          Reset your password
+        </h1>
         <p className="text-muted-foreground text-center">
-          Enter your email address and we'll send you instructions to reset your password.
+          Enter your email address and we'll send you instructions to reset your
+          password.
         </p>
-        
-        {message && (
+
+        {!!message && (
           <div
             className={`rounded-md px-4 py-2 text-sm mb-2 ${
               messageType === 'error'
@@ -61,10 +77,16 @@ export default function ForgotPasswordPage() {
             {message}
           </div>
         )}
-        
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={handleSubmit}
+        >
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium mb-1"
+            >
               Email
             </label>
             <Input
@@ -72,13 +94,13 @@ export default function ForgotPasswordPage() {
               type="email"
               autoComplete="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
               className="w-full"
               placeholder="you@example.com"
             />
           </div>
-          
+
           <Button
             type="submit"
             className="w-full mt-2"
@@ -87,17 +109,17 @@ export default function ForgotPasswordPage() {
             {loading ? 'Sending...' : 'Send reset instructions'}
           </Button>
         </form>
-        
+
         <div className="text-sm text-center mt-2">
           <button
             type="button"
             className="text-primary hover:underline focus:underline"
-            onClick={() => navigate('/login')}
+            onClick={handleBackToLogin}
           >
-            Back to sign in
+            Back to login
           </button>
         </div>
       </div>
     </div>
   );
-} 
+}

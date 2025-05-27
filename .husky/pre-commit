@@ -1,1 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Check if committing to protected branch
+./scripts/check-branch.sh
+
+# If branch check passes, run lint-staged
 pnpm exec lint-staged

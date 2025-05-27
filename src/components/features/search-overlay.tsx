@@ -1,16 +1,31 @@
-import { useState, useEffect, useRef } from 'react';
-import { X, SearchIcon } from 'lucide-react';
-import { Input } from '@/components/common/input';
-import { Button } from '@/components/common/button';
+import { useEffect, useRef, useState } from 'react';
+
+import { SearchIcon, X } from 'lucide-react';
+
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@/components/common/avatar';
+import { Button } from '@/components/common/button';
+import { Input } from '@/components/common/input';
 
 interface SearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+interface SearchResult {
+  id: string;
+  type: 'user' | 'group' | 'post';
+  name?: string;
+  username?: string;
+  avatar?: string;
+  description?: string;
+  content?: string;
+  user?: string;
+  isActive?: boolean;
+  isVisible?: boolean;
 }
 
 export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
@@ -19,13 +34,13 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
   // Focus the input when the overlay opens
   useEffect(() => {
-    if (isOpen && inputRef.current) {
+    if (isOpen && inputRef.current !== null) {
       inputRef.current.focus();
     }
   }, [isOpen]);
 
   // Mock search results
-  const searchResults = [
+  const searchResults: SearchResult[] = [
     {
       id: 'user1',
       type: 'user',
@@ -33,6 +48,8 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       username: 'alexj',
       avatar: '/placeholder.svg?height=40&width=40',
       description: 'UX Designer | Coffee Enthusiast',
+      isActive: true,
+      isVisible: true,
     },
     {
       id: 'user2',
@@ -41,6 +58,8 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       username: 'taylorswift',
       avatar: '/placeholder.svg?height=40&width=40',
       description: 'Singer-songwriter',
+      isActive: true,
+      isVisible: true,
     },
     {
       id: 'group1',
@@ -48,36 +67,40 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       name: 'UI/UX Designers',
       avatar: '/placeholder.svg?height=40&width=40',
       description: 'A community for UI/UX designers',
+      isActive: true,
+      isVisible: true,
     },
     {
       id: 'post1',
       type: 'post',
       content: 'Just launched my new portfolio website!',
       user: 'Alex Johnson',
+      isActive: true,
+      isVisible: true,
     },
   ];
 
   // Filter results based on query
-  const filteredResults =
-    query.length > 0
-      ? searchResults.filter(
-          result =>
-            result.name?.toLowerCase().includes(query.toLowerCase()) ||
-            result.description?.toLowerCase().includes(query.toLowerCase()) ||
-            result.content?.toLowerCase().includes(query.toLowerCase())
-        )
-      : [];
+  const filteredResults = searchResults.filter(
+    (result) => result.isActive === true && result.isVisible === true,
+  );
+
+  // Replace the string conditionals
+  const displayName = (name: string | null | undefined): string => {
+    if (name === null || name === undefined || name === '') return 'Unknown';
+    return name;
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50">
       {/* Backdrop that darkens the entire page */}
-      <div 
-        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" 
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
         onClick={onClose}
       />
-      
+
       {/* Search container - positioned at the top */}
       <div className="relative w-full max-w-3xl mx-auto mt-16">
         <div className="bg-white dark:bg-card rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-border">
@@ -89,9 +112,15 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               placeholder="Search for people, groups, or posts..."
               className="flex-1 border-0 dark:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 dark:placeholder:text-muted-foreground/70"
               value={query}
-              onChange={e => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+            >
               <X className="h-5 w-5" />
               <span className="sr-only">Close</span>
             </Button>
@@ -102,7 +131,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               <>
                 {filteredResults.length > 0 ? (
                   <div className="p-2 space-y-2">
-                    {filteredResults.map(result => (
+                    {filteredResults.map((result) => (
                       <div
                         key={result.id}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-muted/40 rounded-md cursor-pointer"
@@ -111,19 +140,21 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           <div className="flex items-center space-x-3">
                             <Avatar>
                               <AvatarImage
-                                src={result.avatar || '/placeholder.svg'}
-                                alt={result.name || ''}
+                                src={result.avatar ?? '/placeholder.svg'}
+                                alt={displayName(result.name)}
                               />
                               <AvatarFallback>
-                                {(result.name || '?').charAt(0)}
+                                {displayName(result.name).charAt(0)}
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium text-foreground">{result.name}</div>
+                              <div className="font-medium text-foreground">
+                                {displayName(result.name)}
+                              </div>
                               <div className="text-sm text-gray-500 dark:text-muted-foreground">
                                 {result.type === 'user'
-                                  ? `@${result.username}`
-                                  : result.description}
+                                  ? `@${result.username ?? 'unknown'}`
+                                  : (result.description ?? 'No description')}
                               </div>
                             </div>
                           </div>
@@ -132,7 +163,9 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                             <div className="text-sm font-medium text-foreground">
                               Post by {result.user}
                             </div>
-                            <div className="text-foreground">{result.content}</div>
+                            <div className="text-foreground">
+                              {result.content}
+                            </div>
                           </div>
                         )}
                       </div>
@@ -140,7 +173,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   </div>
                 ) : (
                   <div className="p-4 text-center text-gray-500 dark:text-muted-foreground">
-                    No results found for "{query}"
+                    No results found for &quot;{query}&quot;
                   </div>
                 )}
               </>

@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import PostCard from '@/components/features/post-card';
-import CreatePostCard from '@/components/features/create-post-card';
+import { useCallback, useEffect, useState } from 'react';
+
 import { Loader2 } from 'lucide-react';
+
+import CreatePostCard from '@/components/features/create-post-card';
+import PostCard from '@/components/features/post-card';
 
 // Sample post data
 const initialPosts = [
@@ -68,7 +70,7 @@ export default function Feed() {
   // Handle new post submission
   const handlePostSubmit = (content: string) => {
     const newPost = {
-      id: `post-${Date.now()}`,
+      id: `post-${String(Date.now())}`,
       user: {
         name: 'Jane Doe',
         username: 'janedoe',
@@ -85,14 +87,14 @@ export default function Feed() {
   };
 
   // Simulate infinite scroll
-  const loadMorePosts = () => {
+  const loadMorePosts = useCallback(() => {
     setLoading(true);
     // Simulate API call delay
     setTimeout(() => {
       const newPosts = [...posts];
       // Add more posts (in a real app, this would be an API call)
       newPosts.push({
-        id: `new-${Date.now()}`,
+        id: `new-${String(Date.now())}`,
         user: {
           name: 'New User',
           username: 'newuser',
@@ -107,7 +109,7 @@ export default function Feed() {
       setPosts(newPosts);
       setLoading(false);
     }, 1000);
-  };
+  }, [posts]);
 
   // Detect when user scrolls to bottom
   useEffect(() => {
@@ -122,8 +124,10 @@ export default function Feed() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, posts]);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [loading, loadMorePosts]);
 
   return (
     <div className="py-4">
@@ -132,11 +136,14 @@ export default function Feed() {
 
       {/* Posts Feed */}
       <div className="space-y-4">
-        {posts.map(post => (
-          <PostCard key={post.id} post={post} />
+        {posts.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+          />
         ))}
 
-        {loading && (
+        {!!loading && (
           <div className="flex justify-center py-4">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>

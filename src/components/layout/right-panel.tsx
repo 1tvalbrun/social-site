@@ -1,4 +1,7 @@
+import { useState } from 'react';
+
 import { X } from 'lucide-react';
+
 import {
   Avatar,
   AvatarFallback,
@@ -7,7 +10,6 @@ import {
 import { Button } from '@/components/common/button';
 import { Card, CardContent } from '@/components/common/card';
 import { useMobile } from '@/hooks/use-mobile';
-import { useState } from 'react';
 
 interface RightPanelProps {
   onClose?: () => void;
@@ -16,33 +18,41 @@ interface RightPanelProps {
 export default function RightPanel({ onClose }: RightPanelProps) {
   const isMobile = useMobile();
   const [connectionsTab, setConnectionsTab] = useState<'newest' | 'online'>(
-    'newest'
+    'newest',
   );
 
   // Mock data for profiles
   const profiles = Array.from({ length: 6 }).map((_, i) => ({
-    name: `User ${i + 1}`,
+    id: `profile-${String(i + 1)}`,
+    name: `User ${String(i + 1)}`,
     avatar: `/generic-placeholder-graphic.png?height=40&width=40`,
-    fallback: `U${i + 1}`,
+    fallback: `U${String(i + 1)}`,
   }));
+
   const recentMembers = Array.from({ length: 6 }).map((_, i) => ({
-    name: `Member ${i + 1}`,
+    id: `member-${String(i + 1)}`,
+    name: `Member ${String(i + 1)}`,
     avatar: `/generic-placeholder-graphic.png?height=40&width=40`,
-    fallback: `M${i + 1}`,
+    fallback: `M${String(i + 1)}`,
   }));
+
   // Stable mock data for groups
   const groups = [
-    { name: 'Group 1', members: 42 },
-    { name: 'Group 2', members: 67 },
-    { name: 'Group 3', members: 89 },
-    { name: 'Group 4', members: 53 },
+    { id: 'group-1', name: 'Group 1', members: 42 },
+    { id: 'group-2', name: 'Group 2', members: 67 },
+    { id: 'group-3', name: 'Group 3', members: 89 },
+    { id: 'group-4', name: 'Group 4', members: 53 },
   ];
 
   return (
     <div className="h-full overflow-y-auto p-4  dark:bg-background">
-      {isMobile && (
+      {!!isMobile && (
         <div className="flex justify-end mb-2">
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+          >
             <X className="h-5 w-5" />
             <span className="sr-only">Close</span>
           </Button>
@@ -58,16 +68,21 @@ export default function RightPanel({ onClose }: RightPanelProps) {
             </h3>
             <div className="flex flex-wrap gap-2">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="relative">
+                <div
+                  key={`online-user-${String(i + 1)}`}
+                  className="relative"
+                >
                   <Avatar className="h-10 w-10 border-2 border-white dark:border-card rounded-md">
                     <AvatarImage
-                      src={`/generic-placeholder-graphic.png?height=40&width=40`}
+                      src="/generic-placeholder-graphic.png?height=40&width=40"
                       alt="Online user"
                       className="rounded-md"
                     />
-                    <AvatarFallback className="rounded-md">U{i}</AvatarFallback>
+                    <AvatarFallback className="rounded-md">
+                      U{String(i + 1)}
+                    </AvatarFallback>
                   </Avatar>
-                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-card"></span>
+                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-card" />
                 </div>
               ))}
             </div>
@@ -82,18 +97,20 @@ export default function RightPanel({ onClose }: RightPanelProps) {
               My Groups
             </h3>
             <div className="space-y-2">
-              {groups.map((group, i) => (
+              {groups.map((group) => (
                 <div
-                  key={i}
+                  key={group.id}
                   className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-muted/40 cursor-pointer"
                 >
                   <Avatar className="h-10 w-10 flex-shrink-0 rounded-md">
                     <AvatarImage
-                      src={`/generic-placeholder-graphic.png?height=40&width=40`}
+                      src="/generic-placeholder-graphic.png?height=40&width=40"
                       alt="Group"
                       className="rounded-md"
                     />
-                    <AvatarFallback className="rounded-md">G{i}</AvatarFallback>
+                    <AvatarFallback className="rounded-md">
+                      G{group.id.split('-')[1]}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
                     <div className="font-medium truncate">{group.name}</div>
@@ -118,7 +135,9 @@ export default function RightPanel({ onClose }: RightPanelProps) {
               <Button
                 variant={connectionsTab === 'newest' ? 'outline' : 'ghost'}
                 size="sm"
-                onClick={() => setConnectionsTab('newest')}
+                onClick={() => {
+                  setConnectionsTab('newest');
+                }}
                 aria-pressed={connectionsTab === 'newest'}
               >
                 Newest
@@ -126,15 +145,20 @@ export default function RightPanel({ onClose }: RightPanelProps) {
               <Button
                 variant={connectionsTab === 'online' ? 'outline' : 'ghost'}
                 size="sm"
-                onClick={() => setConnectionsTab('online')}
+                onClick={() => {
+                  setConnectionsTab('online');
+                }}
                 aria-pressed={connectionsTab === 'online'}
               >
                 Online
               </Button>
             </div>
             <div className="grid grid-cols-3 gap-3 mb-4">
-              {profiles.map((profile, i) => (
-                <div key={i} className="flex flex-col items-center">
+              {profiles.map((profile) => (
+                <div
+                  key={profile.id}
+                  className="flex flex-col items-center"
+                >
                   <Avatar className="h-12 w-12 mb-1 rounded-md">
                     <AvatarImage
                       src={profile.avatar}
@@ -151,7 +175,10 @@ export default function RightPanel({ onClose }: RightPanelProps) {
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full"
+            >
               More
             </Button>
           </div>
@@ -165,8 +192,11 @@ export default function RightPanel({ onClose }: RightPanelProps) {
               Recently Added Members
             </h3>
             <div className="grid grid-cols-3 gap-3 mb-4">
-              {recentMembers.map((profile, i) => (
-                <div key={i} className="flex flex-col items-center">
+              {recentMembers.map((profile) => (
+                <div
+                  key={profile.id}
+                  className="flex flex-col items-center"
+                >
                   <Avatar className="h-12 w-12 mb-1 rounded-md">
                     <AvatarImage
                       src={profile.avatar}
@@ -183,7 +213,10 @@ export default function RightPanel({ onClose }: RightPanelProps) {
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full"
+            >
               More
             </Button>
           </div>

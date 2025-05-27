@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/auth-context';
-import { Input } from '@/components/common/input';
+import { useState } from 'react';
+
+import { Navigate, useNavigate } from 'react-router-dom';
+
 import { Button } from '@/components/common/button';
+import { Input } from '@/components/common/input';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,7 +17,12 @@ export default function LoginPage() {
 
   // If already authenticated, redirect to home
   if (isAuthenticated && !isLoading) {
-    return <Navigate to="/" replace />;
+    return (
+      <Navigate
+        to="/"
+        replace
+      />
+    );
   }
 
   function validateEmail(email: string) {
@@ -37,19 +44,21 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    
+
     try {
       const success = await login(email, password);
       if (success) {
         setMessage('Login successful!');
         setMessageType('success');
         // Auth context will handle the authenticated state
-        setTimeout(() => navigate('/'), 1000);
+        setTimeout(() => {
+          void navigate('/');
+        }, 1000);
       } else {
         setMessage('Incorrect email or password.');
         setMessageType('error');
       }
-    } catch (error) {
+    } catch {
       setMessage('An error occurred during login.');
       setMessageType('error');
     } finally {
@@ -57,11 +66,33 @@ export default function LoginPage() {
     }
   };
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    void handleSubmit(e);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleForgotPassword = () => {
+    void navigate('/forgot-password');
+  };
+
+  const handleSignupClick = () => {
+    void navigate('/signup');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
       <div className="w-full max-w-md bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-border p-8 flex flex-col gap-6">
-        <h1 className="text-2xl font-bold text-center mb-2">Sign in to your account</h1>
-        {message && (
+        <h1 className="text-2xl font-bold text-center mb-2">
+          Sign in to your account
+        </h1>
+        {!!message && (
           <div
             className={`rounded-md px-4 py-2 text-sm mb-2 ${
               messageType === 'error'
@@ -74,9 +105,15 @@ export default function LoginPage() {
             {message}
           </div>
         )}
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={handleFormSubmit}
+        >
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium mb-1"
+            >
               Email
             </label>
             <Input
@@ -84,14 +121,17 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
               className="w-full"
               placeholder="you@example.com"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1"
+            >
               Password
             </label>
             <Input
@@ -99,7 +139,7 @@ export default function LoginPage() {
               type="password"
               autoComplete="current-password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               required
               className="w-full"
               placeholder="Your password"
@@ -117,16 +157,16 @@ export default function LoginPage() {
           <button
             type="button"
             className="text-primary hover:underline focus:underline"
-            onClick={() => navigate('/forgot-password')}
+            onClick={handleForgotPassword}
           >
-            Forgot your password?
+            Forgot password?
           </button>
           <span className="text-muted-foreground">
             Don&apos;t have an account?{' '}
             <button
               type="button"
               className="text-primary hover:underline focus:underline"
-              onClick={() => navigate('/signup')}
+              onClick={handleSignupClick}
             >
               Sign up
             </button>
@@ -135,4 +175,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-} 
+}

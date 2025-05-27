@@ -1,4 +1,4 @@
-import { Home, Users, Grid, Bell, User } from 'lucide-react';
+import { Bell, Grid, Home, User, Users } from 'lucide-react';
 
 export default function BottomNavigation() {
   return (

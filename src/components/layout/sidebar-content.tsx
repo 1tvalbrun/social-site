@@ -1,28 +1,10 @@
 // @ts-jsx
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/common/avatar';
+import { BookOpen, Play } from 'lucide-react';
+
 import { Button } from '@/components/common/button';
 import { Card, CardContent, CardTitle } from '@/components/common/card';
-import { Gift, Calendar, ExternalLink, Play, BookOpen } from 'lucide-react';
 
 export default function SidebarContent() {
-  // Mock data for birthdays
-  const birthdays = [
-    {
-      id: 'b1',
-      name: 'Michael Johnson',
-      avatar: '/placeholder.svg?height=40&width=40',
-    },
-    {
-      id: 'b2',
-      name: 'Sarah Williams',
-      avatar: '/placeholder.svg?height=40&width=40',
-    },
-  ];
-
   return (
     <div className="h-full overflow-y-auto p-4 space-y-4">
       {/* Sponsored Section */}
@@ -48,7 +30,7 @@ export default function SidebarContent() {
                       <span className="sr-only">Play video</span>
                     </Button>
                   </div>
-                  <div className="w-full h-full opacity-70 bg-gray-200 dark:bg-muted"></div>
+                  <div className="w-full h-full opacity-70 bg-gray-200 dark:bg-muted" />
                 </div>
               </div>
             </div>
@@ -76,7 +58,10 @@ export default function SidebarContent() {
                     Level 1
                   </p>
 
-                  <Button className="w-full h-8 text-xs" variant="outline">
+                  <Button
+                    className="w-full h-8 text-xs"
+                    variant="outline"
+                  >
                     View Curriculum
                   </Button>
                 </CardContent>
@@ -114,7 +99,11 @@ export default function SidebarContent() {
                 </p>
               </div>
 
-              <Button variant="outline" size="sm" className="w-full text-xs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full text-xs"
+              >
                 Visit Store
               </Button>
             </div>

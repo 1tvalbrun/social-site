@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { Card, CardContent } from '@/components/common/card';
-import { Button } from '@/components/common/button';
-import Header from '@/components/layout/header';
+
 import { useNavigate } from 'react-router-dom';
+
+import { Button } from '@/components/common/button';
+import { Card, CardContent } from '@/components/common/card';
+import Header from '@/components/layout/header';
 
 const payments = [
   {
@@ -58,21 +60,26 @@ const statusStyles: Record<string, string> = {
 };
 
 const totalPaid = payments
-  .filter(p => p.status === 'Completed')
+  .filter((p) => p.status === 'Completed')
   .reduce((sum, p) => sum + p.total, 0)
   .toFixed(2);
 
 const PaymentsPage: React.FC = () => {
   const navigate = useNavigate();
+
+  const handleBackToSettings = () => {
+    void navigate('/settings');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <Header onMenuClick={() => {}} />
+      <Header onMenuClick={() => undefined} />
       <div className="container mx-auto pt-20 pb-10 px-4">
         <div className="flex items-center mb-6">
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate('/')}
+            onClick={() => void navigate('/')}
             className="mr-2"
             aria-label="Back to home"
           >
@@ -110,7 +117,7 @@ const PaymentsPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800">
-                  {payments.map(p => (
+                  {payments.map((p) => (
                     <tr key={p.id}>
                       <td className="px-4 py-3 font-semibold">#{p.id}</td>
                       <td className="px-4 py-3">{p.date}</td>
@@ -132,6 +139,13 @@ const PaymentsPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+        <button
+          type="button"
+          className="text-primary hover:underline focus:underline"
+          onClick={handleBackToSettings}
+        >
+          Back to settings
+        </button>
       </div>
     </div>
   );
