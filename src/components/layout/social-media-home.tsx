@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
 import Header from '@/components/layout/header';
 import Feed from '@/components/features/feed';
 import BottomNavigation from '@/components/layout/bottom-navigation';
@@ -11,7 +10,6 @@ import { useMobile } from '@/hooks/use-mobile';
 
 export default function SocialMediaHome() {
   const [mounted, setMounted] = useState(false);
-  const { theme } = useTheme();
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 

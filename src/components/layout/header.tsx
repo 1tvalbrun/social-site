@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/use-auth';
 import {
   Bell,
   Menu,
@@ -34,9 +36,16 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const { theme, setTheme } = useTheme();
-  const [notifications, setNotifications] = useState(3);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const notifications = 3;
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOverlayOpen, setSearchOverlayOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <>
@@ -105,23 +114,22 @@ export default function Header({ onMenuClick }: HeaderProps) {
           {/* User profile dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full"
-              >
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
                     src="/placeholder.svg?height=32&width=32"
                     alt="@user"
                   />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.name?.substring(0, 2) || 'JD'}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            
-            <DropdownMenuContent 
-              align="end" 
-              className="w-56 mt-1 overflow-hidden" 
+
+            <DropdownMenuContent
+              align="end"
+              className="w-56 mt-1 overflow-hidden"
               sideOffset={4}
             >
               <div className="flex items-center gap-2 p-2.5 pb-3 border-b border-border dark:border-border/60">
@@ -130,34 +138,42 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     src="/placeholder.svg?height=40&width=40"
                     alt="@user"
                   />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.name?.substring(0, 2) || 'JD'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col space-y-0.5 leading-none min-w-0">
-                  <p className="font-medium text-base truncate">Jane Doe</p>
+                  <p className="font-medium text-base truncate">
+                    {user?.name || 'Jane Doe'}
+                  </p>
                   <p className="text-sm text-muted-foreground truncate max-w-[130px]">
-                    jane.doe@example.com
+                    {user?.email || 'jane.doe@example.com'}
                   </p>
                 </div>
               </div>
-              
+
               <div className="px-1 py-1 text-sm text-muted-foreground border-b border-border/40 mx-1 pb-2 mt-1">
                 Currently Online
               </div>
-              
+
               <div className="p-1">
                 <DropdownMenuItem className="my-0.5">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuItem className="my-0.5">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuSeparator className="my-1.5 bg-border/50" />
-                
-                <DropdownMenuItem className="my-0.5 text-destructive" variant="destructive">
+
+                <DropdownMenuItem
+                  className="my-0.5 text-destructive"
+                  variant="destructive"
+                  onClick={handleLogout}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
@@ -176,7 +192,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             <span className="sr-only">Menu</span>
           </Button>
         </div>
-        
+
         {/* Search Overlay */}
         <SearchOverlay
           isOpen={searchOverlayOpen}

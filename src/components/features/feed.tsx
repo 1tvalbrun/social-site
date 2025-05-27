@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PostCard from '@/components/features/post-card';
 import CreatePostCard from '@/components/features/create-post-card';
 import { Loader2 } from 'lucide-react';
@@ -85,29 +85,29 @@ export default function Feed() {
   };
 
   // Simulate infinite scroll
-  const loadMorePosts = () => {
+  const loadMorePosts = useCallback(() => {
     setLoading(true);
     // Simulate API call delay
     setTimeout(() => {
-      const newPosts = [...posts];
-      // Add more posts (in a real app, this would be an API call)
-      newPosts.push({
-        id: `new-${Date.now()}`,
-        user: {
-          name: 'New User',
-          username: 'newuser',
-          avatar: '/placeholder.svg?height=40&width=40',
+      setPosts(currentPosts => [
+        ...currentPosts,
+        {
+          id: `new-${Date.now()}`,
+          user: {
+            name: 'New User',
+            username: 'newuser',
+            avatar: '/placeholder.svg?height=40&width=40',
+          },
+          timestamp: 'Just now',
+          content:
+            'This is a newly loaded post as you scroll down. In a real app, this would come from an API.',
+          likes: Math.floor(Math.random() * 100),
+          comments: Math.floor(Math.random() * 20),
         },
-        timestamp: 'Just now',
-        content:
-          'This is a newly loaded post as you scroll down. In a real app, this would come from an API.',
-        likes: Math.floor(Math.random() * 100),
-        comments: Math.floor(Math.random() * 20),
-      });
-      setPosts(newPosts);
+      ]);
       setLoading(false);
     }, 1000);
-  };
+  }, []);
 
   // Detect when user scrolls to bottom
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function Feed() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, posts]);
+  }, [loading, loadMorePosts]);
 
   return (
     <div className="py-4">
