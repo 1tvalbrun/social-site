@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/use-auth';
-import { Input } from '@/components/common/input';
+
+import { Navigate, useNavigate } from 'react-router-dom';
+
 import { Button } from '@/components/common/button';
+import { Input } from '@/components/common/input';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,12 +17,25 @@ export default function LoginPage() {
 
   // If already authenticated, redirect to home
   if (isAuthenticated && !isLoading) {
-    return <Navigate to="/" replace />;
+    return (
+      <Navigate
+        to="/"
+        replace
+      />
+    );
   }
 
   function validateEmail(email: string) {
     return /\S+@\S+\.\S+/.test(email);
   }
+
+  const handleForgotPasswordClick = () => {
+    void navigate('/forgot-password');
+  };
+
+  const handleSignUpClick = () => {
+    void navigate('/signup');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +59,9 @@ export default function LoginPage() {
         setMessage('Login successful!');
         setMessageType('success');
         // Auth context will handle the authenticated state
-        setTimeout(() => navigate('/'), 1000);
+        void setTimeout(() => {
+          void navigate('/');
+        }, 1000);
       } else {
         setMessage('Incorrect email or password.');
         setMessageType('error');
@@ -63,7 +80,7 @@ export default function LoginPage() {
         <h1 className="text-2xl font-bold text-center mb-2">
           Sign in to your account
         </h1>
-        {message && (
+        {!!message && (
           <div
             className={`rounded-md px-4 py-2 text-sm mb-2 ${
               messageType === 'error'
@@ -76,9 +93,17 @@ export default function LoginPage() {
             {message}
           </div>
         )}
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={(e) => {
+            void handleSubmit(e);
+          }}
+        >
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium mb-1"
+            >
               Email
             </label>
             <Input
@@ -86,7 +111,9 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
               required
               className="w-full"
               placeholder="you@example.com"
@@ -104,13 +131,19 @@ export default function LoginPage() {
               type="password"
               autoComplete="current-password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
               required
               className="w-full"
               placeholder="Your password"
             />
           </div>
-          <Button type="submit" className="w-full mt-2" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full mt-2"
+            disabled={loading}
+          >
             {loading ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>
@@ -118,7 +151,7 @@ export default function LoginPage() {
           <button
             type="button"
             className="text-primary hover:underline focus:underline"
-            onClick={() => navigate('/forgot-password')}
+            onClick={handleForgotPasswordClick}
           >
             Forgot your password?
           </button>
@@ -127,7 +160,7 @@ export default function LoginPage() {
             <button
               type="button"
               className="text-primary hover:underline focus:underline"
-              onClick={() => navigate('/signup')}
+              onClick={handleSignUpClick}
             >
               Sign up
             </button>

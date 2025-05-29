@@ -1,7 +1,9 @@
 import { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import { Input } from '@/components/common/input';
+
 import { Button } from '@/components/common/button';
+import { Input } from '@/components/common/input';
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -17,7 +19,11 @@ export default function SignupPage() {
     return /\S+@\S+\.\S+/.test(email);
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLoginClick = () => {
+    void navigate('/login');
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setMessageType('');
@@ -46,12 +52,14 @@ export default function SignupPage() {
 
     setLoading(true);
     // Placeholder signup logic
-    setTimeout(() => {
+    void setTimeout(() => {
       setLoading(false);
       setMessage('Account created successfully!');
       setMessageType('success');
       // Redirect to login after successful signup
-      setTimeout(() => navigate('/login'), 1500);
+      void setTimeout(() => {
+        void navigate('/login');
+      }, 1500);
     }, 1000);
   };
 
@@ -61,7 +69,7 @@ export default function SignupPage() {
         <h1 className="text-2xl font-bold text-center mb-2">
           Create an account
         </h1>
-        {message && (
+        {!!message && (
           <div
             className={`rounded-md px-4 py-2 text-sm mb-2 ${
               messageType === 'error'
@@ -74,9 +82,15 @@ export default function SignupPage() {
             {message}
           </div>
         )}
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={handleSubmit}
+        >
           <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium mb-1"
+            >
               Full Name
             </label>
             <Input
@@ -84,14 +98,19 @@ export default function SignupPage() {
               type="text"
               autoComplete="name"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
               required
               className="w-full"
               placeholder="Jane Doe"
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium mb-1"
+            >
               Email
             </label>
             <Input
@@ -99,7 +118,9 @@ export default function SignupPage() {
               type="email"
               autoComplete="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
               required
               className="w-full"
               placeholder="you@example.com"
@@ -117,7 +138,9 @@ export default function SignupPage() {
               type="password"
               autoComplete="new-password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
               required
               className="w-full"
               placeholder="Create a password"
@@ -135,13 +158,19 @@ export default function SignupPage() {
               type="password"
               autoComplete="new-password"
               value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+              }}
               required
               className="w-full"
               placeholder="Confirm your password"
             />
           </div>
-          <Button type="submit" className="w-full mt-2" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full mt-2"
+            disabled={loading}
+          >
             {loading ? 'Creating account...' : 'Sign up'}
           </Button>
         </form>
@@ -151,7 +180,7 @@ export default function SignupPage() {
             <button
               type="button"
               className="text-primary hover:underline focus:underline"
-              onClick={() => navigate('/login')}
+              onClick={handleLoginClick}
             >
               Sign in
             </button>

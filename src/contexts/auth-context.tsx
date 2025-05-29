@@ -1,8 +1,9 @@
-import { useState, useEffect, ReactNode } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
+
 import {
   AuthContext,
-  type User,
   type AuthContextType,
+  type User,
 } from './auth-context-types';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -13,9 +14,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = () => {
       const storedUser = localStorage.getItem('user');
-      if (storedUser) {
+      if (storedUser !== null && storedUser !== '') {
         try {
-          setUser(JSON.parse(storedUser));
+          const parsedUser = JSON.parse(storedUser) as User;
+          setUser(parsedUser);
         } catch (error) {
           console.error('Error parsing stored user:', error);
           localStorage.removeItem('user');
@@ -29,17 +31,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Login function
   const login = async (email: string, password: string): Promise<boolean> => {
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     // For demo purposes - in a real app this would call an API
     if (email === 'user@example.com' && password === 'password') {
-      const user = {
+      const newUser = {
         id: '1',
         name: 'Jane Doe',
         email: 'user@example.com',
       };
 
       // Store user in localStorage
-      localStorage.setItem('user', JSON.stringify(user));
-      setUser(user);
+      localStorage.setItem('user', JSON.stringify(newUser));
+      setUser(newUser);
       return true;
     }
     return false;
@@ -51,13 +56,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    logout,
-  };
+  const value: AuthContextType = useMemo(
+    () => ({
+      user,
+      isAuthenticated: user !== null,
+      isLoading,
+      login,
+      logout,
+    }),
+    [user, isLoading],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

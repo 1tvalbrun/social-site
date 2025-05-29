@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Header from '@/components/layout/header';
+import { useEffect, useState } from 'react';
+
 import Feed from '@/components/features/feed';
 import BottomNavigation from '@/components/layout/bottom-navigation';
 import Header from '@/components/layout/header';

@@ -3,10 +3,11 @@ import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ThemeProvider } from 'next-themes';
-import { BrowserRouter } from 'react-router-dom';
+import * as ReactDOM from 'react-dom/client';
+
 import { AuthProvider } from '@/contexts/auth-context';
+
 import App from './App';
-import { AuthProvider } from './contexts/auth-context';
 import './index.css';
 
 const rootElement = document.getElementById('root');
@@ -21,10 +22,14 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
           <App />
         </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

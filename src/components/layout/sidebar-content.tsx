@@ -1,5 +1,6 @@
 // @ts-jsx
-import { Home, Users, MessageCircle, Bell, Bookmark } from 'lucide-react';
+import { Bell, Bookmark, Home, MessageCircle, Users } from 'lucide-react';
+
 import { Button } from '@/components/common/button';
 
 const SidebarContent = () => {
@@ -16,7 +17,7 @@ const SidebarContent = () => {
       {/* Navigation Menu */}
       <nav className="flex-1 px-4 py-6">
         <div className="space-y-2">
-          {menuItems.map(item => (
+          {menuItems.map((item) => (
             <Button
               key={item.label}
               variant="ghost"

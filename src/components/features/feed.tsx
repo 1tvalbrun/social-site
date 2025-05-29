@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import PostCard from '@/components/features/post-card';
-import CreatePostCard from '@/components/features/create-post-card';
+import { useCallback, useEffect, useState } from 'react';
+
 import { Loader2 } from 'lucide-react';
 
 import CreatePostCard from '@/components/features/create-post-card';
@@ -92,10 +91,10 @@ export default function Feed() {
     setLoading(true);
     // Simulate API call delay
     setTimeout(() => {
-      setPosts(currentPosts => [
+      setPosts((currentPosts) => [
         ...currentPosts,
         {
-          id: `new-${Date.now()}`,
+          id: `new-${String(Date.now())}`,
           user: {
             name: 'New User',
             username: 'newuser',
@@ -125,7 +124,9 @@ export default function Feed() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [loading, loadMorePosts]);
 
   return (
