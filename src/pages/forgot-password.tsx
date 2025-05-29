@@ -1,9 +1,7 @@
 import { useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
-
-import { Button } from '@/components/common/button';
 import { Input } from '@/components/common/input';
+import { Button } from '@/components/common/button';
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -16,7 +14,7 @@ export default function ForgotPasswordPage() {
     return /\S+@\S+\.\S+/.test(email);
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setMessageType('');
@@ -34,23 +32,12 @@ export default function ForgotPasswordPage() {
     }
 
     setLoading(true);
-    // Simulate API call
+    // Placeholder password reset logic
     setTimeout(() => {
       setLoading(false);
       setMessage('Password reset instructions have been sent to your email.');
       setMessageType('success');
-      setTimeout(() => {
-        void navigate('/login');
-      }, 2000);
     }, 1000);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handleBackToLogin = () => {
-    void navigate('/login');
   };
 
   return (
@@ -64,7 +51,7 @@ export default function ForgotPasswordPage() {
           password.
         </p>
 
-        {!!message && (
+        {message && (
           <div
             className={`rounded-md px-4 py-2 text-sm mb-2 ${
               messageType === 'error'
@@ -78,15 +65,9 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={handleSubmit}
-        >
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email
             </label>
             <Input
@@ -94,18 +75,14 @@ export default function ForgotPasswordPage() {
               type="email"
               autoComplete="email"
               value={email}
-              onChange={handleEmailChange}
+              onChange={e => setEmail(e.target.value)}
               required
               className="w-full"
               placeholder="you@example.com"
             />
           </div>
 
-          <Button
-            type="submit"
-            className="w-full mt-2"
-            disabled={loading}
-          >
+          <Button type="submit" className="w-full mt-2" disabled={loading}>
             {loading ? 'Sending...' : 'Send reset instructions'}
           </Button>
         </form>
@@ -114,9 +91,9 @@ export default function ForgotPasswordPage() {
           <button
             type="button"
             className="text-primary hover:underline focus:underline"
-            onClick={handleBackToLogin}
+            onClick={() => navigate('/login')}
           >
-            Back to login
+            Back to sign in
           </button>
         </div>
       </div>

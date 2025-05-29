@@ -3,8 +3,8 @@ import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ThemeProvider } from 'next-themes';
-import * as ReactDOM from 'react-dom/client';
-
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from '@/contexts/auth-context';
 import App from './App';
 import { AuthProvider } from './contexts/auth-context';
 import './index.css';
@@ -20,16 +20,11 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <AuthProvider>
+      <AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <App />
-        </AuthProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

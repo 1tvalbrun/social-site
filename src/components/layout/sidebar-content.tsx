@@ -1,115 +1,35 @@
 // @ts-jsx
-import { BookOpen, Play } from 'lucide-react';
-
+import { Home, Users, MessageCircle, Bell, Bookmark } from 'lucide-react';
 import { Button } from '@/components/common/button';
-import { Card, CardContent, CardTitle } from '@/components/common/card';
 
-export default function SidebarContent() {
+const SidebarContent = () => {
+  const menuItems = [
+    { icon: Home, label: 'Home', href: '/' },
+    { icon: Users, label: 'Friends', href: '/friends' },
+    { icon: MessageCircle, label: 'Messages', href: '/messages' },
+    { icon: Bell, label: 'Notifications', href: '/notifications' },
+    { icon: Bookmark, label: 'Saved', href: '/saved' },
+  ];
+
   return (
-    <div className="h-full overflow-y-auto p-4 space-y-4">
-      {/* Sponsored Section */}
-      <Card className="overflow-hidden bg-white dark:bg-card border-border">
-        <CardContent className="p-0">
-          <div className="p-4">
-            <h3 className="text-sm font-medium mb-3 text-center text-foreground">
-              The Comforter's Stream
-            </h3>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-gray-500 dark:text-muted-foreground text-center">
-                  DVD of the Week
-                </h4>
-                <div className="relative rounded-md overflow-hidden bg-gray-100 dark:bg-muted aspect-video">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-12 w-12 rounded-full bg-black/30 text-white hover:bg-black/50 dark:bg-black/40 dark:hover:bg-black/60"
-                    >
-                      <Play className="h-6 w-6" />
-                      <span className="sr-only">Play video</span>
-                    </Button>
-                  </div>
-                  <div className="w-full h-full opacity-70 bg-gray-200 dark:bg-muted" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="h-px bg-gray-200 dark:bg-border" />
-
-          {/* DOZEI Section */}
-          <div className="p-4">
-            <h3 className="text-sm font-medium mb-3 flex items-center justify-center text-foreground">
-              <BookOpen className="h-4 w-4 mr-2" />
-              DOZEI
-            </h3>
-            <div className="space-y-3">
-              <Card className="shadow-sm overflow-hidden border-border">
-                <div className="bg-gray-100 dark:bg-muted h-28 flex items-center justify-center">
-                  <BookOpen className="h-10 w-10" />
-                </div>
-                <CardContent className="p-3 pt-2 pb-2 text-center">
-                  <CardTitle className="text-sm font-medium mb-1">
-                    Mary Mother of God
-                  </CardTitle>
-                  <p className="text-xs text-gray-500 dark:text-muted-foreground mb-2">
-                    Level 1
-                  </p>
-
-                  <Button
-                    className="w-full h-8 text-xs"
-                    variant="outline"
-                  >
-                    View Curriculum
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="h-px bg-gray-200 dark:bg-border" />
-
-          {/* ICGJC Store Section */}
-          <div className="p-4">
-            <h3 className="text-sm font-medium mb-3 text-center text-foreground">
-              ICGJC Store
-            </h3>
-            <div className="space-y-3">
-              <div className="bg-gray-100 dark:bg-muted rounded-md p-3 text-center">
-                <div className="text-sm font-medium mb-1">New Arrivals</div>
-                <p className="text-xs text-gray-500 dark:text-muted-foreground mb-2">
-                  Check out our latest books and resources for spiritual growth
-                </p>
-              </div>
-
-              <div className="bg-gray-100 dark:bg-muted rounded-md p-3 text-center">
-                <div className="text-sm font-medium mb-1">Weekly Specials</div>
-                <p className="text-xs text-gray-500 dark:text-muted-foreground mb-2">
-                  15% off all devotional materials this week only
-                </p>
-              </div>
-
-              <div className="bg-gray-100 dark:bg-muted rounded-md p-3 text-center">
-                <div className="text-sm font-medium mb-1">Gift Sets</div>
-                <p className="text-xs text-gray-500 dark:text-muted-foreground mb-2">
-                  Curated scripture journals, bookmarks, and prayer cards
-                </p>
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-xs"
-              >
-                Visit Store
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="flex flex-col h-full">
+      {/* Navigation Menu */}
+      <nav className="flex-1 px-4 py-6">
+        <div className="space-y-2">
+          {menuItems.map(item => (
+            <Button
+              key={item.label}
+              variant="ghost"
+              className="w-full justify-start text-left h-12 px-4"
+            >
+              <item.icon className="mr-3 h-5 w-5" />
+              {item.label}
+            </Button>
+          ))}
+        </div>
+      </nav>
     </div>
   );
-}
+};
+
+export default SidebarContent;

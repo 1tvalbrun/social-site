@@ -1,11 +1,9 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-
-import SocialMediaHome from '@/components/layout/social-media-home';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
-import ForgotPasswordPage from '@/pages/forgot-password';
+import SocialMediaHome from '@/components/layout/social-media-home';
 import LoginPage from '@/pages/login';
-import SettingsPage from '@/pages/settings';
 import SignupPage from '@/pages/signup';
+import ForgotPasswordPage from '@/pages/forgot-password';
 
 // Protected route component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -21,12 +19,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-      />
-    );
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
@@ -35,27 +28,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={<LoginPage />}
-      />
-      <Route
-        path="/signup"
-        element={<SignupPage />}
-      />
-      <Route
-        path="/forgot-password"
-        element={<ForgotPasswordPage />}
-      />
-      {/* Protected routes */}
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <SettingsPage />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      {/* Protected route */}
       <Route
         path="/*"
         element={

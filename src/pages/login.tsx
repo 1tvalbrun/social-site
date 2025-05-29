@@ -1,10 +1,8 @@
 import { useState } from 'react';
-
-import { Navigate, useNavigate } from 'react-router-dom';
-
-import { Button } from '@/components/common/button';
-import { Input } from '@/components/common/input';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
+import { Input } from '@/components/common/input';
+import { Button } from '@/components/common/button';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -17,12 +15,7 @@ export default function LoginPage() {
 
   // If already authenticated, redirect to home
   if (isAuthenticated && !isLoading) {
-    return (
-      <Navigate
-        to="/"
-        replace
-      />
-    );
+    return <Navigate to="/" replace />;
   }
 
   function validateEmail(email: string) {
@@ -51,9 +44,7 @@ export default function LoginPage() {
         setMessage('Login successful!');
         setMessageType('success');
         // Auth context will handle the authenticated state
-        setTimeout(() => {
-          void navigate('/');
-        }, 1000);
+        setTimeout(() => navigate('/'), 1000);
       } else {
         setMessage('Incorrect email or password.');
         setMessageType('error');
@@ -66,33 +57,13 @@ export default function LoginPage() {
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    void handleSubmit(e);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handleForgotPassword = () => {
-    void navigate('/forgot-password');
-  };
-
-  const handleSignupClick = () => {
-    void navigate('/signup');
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
       <div className="w-full max-w-md bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-border p-8 flex flex-col gap-6">
         <h1 className="text-2xl font-bold text-center mb-2">
           Sign in to your account
         </h1>
-        {!!message && (
+        {message && (
           <div
             className={`rounded-md px-4 py-2 text-sm mb-2 ${
               messageType === 'error'
@@ -105,15 +76,9 @@ export default function LoginPage() {
             {message}
           </div>
         )}
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={handleFormSubmit}
-        >
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email
             </label>
             <Input
@@ -121,7 +86,7 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               value={email}
-              onChange={handleEmailChange}
+              onChange={e => setEmail(e.target.value)}
               required
               className="w-full"
               placeholder="you@example.com"
@@ -139,17 +104,13 @@ export default function LoginPage() {
               type="password"
               autoComplete="current-password"
               value={password}
-              onChange={handlePasswordChange}
+              onChange={e => setPassword(e.target.value)}
               required
               className="w-full"
               placeholder="Your password"
             />
           </div>
-          <Button
-            type="submit"
-            className="w-full mt-2"
-            disabled={loading}
-          >
+          <Button type="submit" className="w-full mt-2" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>
@@ -157,16 +118,16 @@ export default function LoginPage() {
           <button
             type="button"
             className="text-primary hover:underline focus:underline"
-            onClick={handleForgotPassword}
+            onClick={() => navigate('/forgot-password')}
           >
-            Forgot password?
+            Forgot your password?
           </button>
           <span className="text-muted-foreground">
             Don&apos;t have an account?{' '}
             <button
               type="button"
               className="text-primary hover:underline focus:underline"
-              onClick={handleSignupClick}
+              onClick={() => navigate('/signup')}
             >
               Sign up
             </button>

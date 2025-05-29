@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-
+import { useTheme } from 'next-themes';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '@/hooks/use-auth';
 import {
   Bell,
   CreditCard,
@@ -42,49 +42,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const notifications = 3;
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOverlayOpen, setSearchOverlayOpen] = useState(false);
 
-  const notifications = 3;
-
   const handleLogout = () => {
     logout();
-    void navigate('/login');
-  };
-
-  const handleHomeClick = () => {
-    void navigate('/');
-  };
-
-  const handleHomeKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      void navigate('/');
-    }
-  };
-
-  const handleSettingsClick = () => {
-    void navigate('/settings');
-  };
-
-  const handlePaymentsClick = () => {
-    void navigate('/payments');
-  };
-
-  const getUserInitials = (name: string | undefined | null): string => {
-    if (name === undefined || name === null || name === '') return 'JD';
-    return name.substring(0, 2);
-  };
-
-  const getUserName = (name: string | undefined | null): string => {
-    if (name === undefined || name === null || name === '') return 'Jane Doe';
-    return name;
-  };
-
-  const getUserEmail = (email: string | undefined | null): string => {
-    if (email === undefined || email === null || email === '')
-      return 'jane.doe@example.com';
-    return email;
+    navigate('/login');
   };
 
   return (
@@ -167,105 +131,107 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <span className="sr-only">Toggle theme</span>
         </Button>
 
-        {/* User profile dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full"
+          {/* Theme toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5 text-yellow-400" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+
+          {/* User profile dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src="/placeholder.svg?height=32&width=32"
+                    alt="@user"
+                  />
+                  <AvatarFallback>
+                    {user?.name?.substring(0, 2) || 'JD'}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="end"
+              className="w-56 mt-1 overflow-hidden"
+              sideOffset={4}
             >
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="@user"
-                />
-                <AvatarFallback>{getUserInitials(user?.name)}</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
+              <div className="flex items-center gap-2 p-2.5 pb-3 border-b border-border dark:border-border/60">
+                <Avatar className="h-12 w-12 shrink-0">
+                  <AvatarImage
+                    src="/placeholder.svg?height=40&width=40"
+                    alt="@user"
+                  />
+                  <AvatarFallback>
+                    {user?.name?.substring(0, 2) || 'JD'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col space-y-0.5 leading-none min-w-0">
+                  <p className="font-medium text-base truncate">
+                    {user?.name || 'Jane Doe'}
+                  </p>
+                  <p className="text-sm text-muted-foreground truncate max-w-[130px]">
+                    {user?.email || 'jane.doe@example.com'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="px-1 py-1 text-sm text-muted-foreground border-b border-border/40 mx-1 pb-2 mt-1">
+                Currently Online
+              </div>
+
+              <div className="p-1">
+                <DropdownMenuItem className="my-0.5">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="my-0.5">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="my-1.5 bg-border/50" />
+
+                <DropdownMenuItem
+                  className="my-0.5 text-destructive"
+                  variant="destructive"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <DropdownMenuContent
             align="end"
             className="w-56 mt-1 overflow-hidden"
             sideOffset={4}
           >
-            <div className="flex items-center gap-2 p-2.5 pb-3 border-b border-border dark:border-border/60">
-              <Avatar className="h-12 w-12 shrink-0">
-                <AvatarImage
-                  src="/placeholder.svg?height=40&width=40"
-                  alt="@user"
-                />
-                <AvatarFallback>{getUserInitials(user?.name)}</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col space-y-0.5 leading-none min-w-0">
-                <p className="font-medium text-base truncate">
-                  {getUserName(user?.name)}
-                </p>
-                <p className="text-sm text-muted-foreground truncate max-w-[130px]">
-                  {getUserEmail(user?.email)}
-                </p>
-              </div>
-            </div>
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Menu</span>
+          </Button>
+        </div>
 
-            <div className="px-1 py-1 text-sm text-muted-foreground border-b border-border/40 mx-1 pb-2 mt-1">
-              Currently Online
-            </div>
-
-            <div className="p-1">
-              <DropdownMenuItem className="my-0.5">
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                className="my-0.5"
-                onClick={handleSettingsClick}
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                className="my-0.5"
-                onClick={handlePaymentsClick}
-              >
-                <CreditCard className="mr-2 h-4 w-4" />
-                <span>Payments</span>
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator className="my-1.5 bg-border/50" />
-
-              <DropdownMenuItem
-                className="my-0.5 text-destructive"
-                variant="destructive"
-                onClick={handleLogout}
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Menu button for sidebar - now on the right */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={onMenuClick}
-        >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Menu</span>
-        </Button>
-      </div>
-
-      {/* Search Overlay */}
-      <SearchOverlay
-        isOpen={searchOverlayOpen}
-        onClose={() => {
-          setSearchOverlayOpen(false);
-        }}
-      />
-    </header>
+        {/* Search Overlay */}
+        <SearchOverlay
+          isOpen={searchOverlayOpen}
+          onClose={() => setSearchOverlayOpen(false)}
+        />
+      </header>
+    </>
   );
 }

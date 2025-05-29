@@ -6,11 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'",
-    "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,css,md,json}'",
-    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext ts,tsx --fix",
     "preview": "vite preview",
     "prepare": "husky",
     "check": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
