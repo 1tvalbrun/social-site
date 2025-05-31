@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
 import SearchOverlay from '@/components/features/search-overlay';
+import AnnouncementPopup from '../features/AnnouncementPopup';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -56,6 +57,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             SocialApp
           </div>
         </div>
+        <AnnouncementPopup />
 
         {/* Search bar - hidden on very small screens */}
         <div className="hidden sm:flex relative mx-4 flex-1 max-w-md">
@@ -114,23 +116,22 @@ export default function Header({ onMenuClick }: HeaderProps) {
           {/* User profile dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full"
-              >
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
                     src="/placeholder.svg?height=32&width=32"
                     alt="@user"
                   />
-                  <AvatarFallback>{user?.name?.substring(0, 2) || 'JD'}</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.name?.substring(0, 2) || 'JD'}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            
-            <DropdownMenuContent 
-              align="end" 
-              className="w-56 mt-1 overflow-hidden" 
+
+            <DropdownMenuContent
+              align="end"
+              className="w-56 mt-1 overflow-hidden"
               sideOffset={4}
             >
               <div className="flex items-center gap-2 p-2.5 pb-3 border-b border-border dark:border-border/60">
@@ -139,35 +140,39 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     src="/placeholder.svg?height=40&width=40"
                     alt="@user"
                   />
-                  <AvatarFallback>{user?.name?.substring(0, 2) || 'JD'}</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.name?.substring(0, 2) || 'JD'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col space-y-0.5 leading-none min-w-0">
-                  <p className="font-medium text-base truncate">{user?.name || 'Jane Doe'}</p>
+                  <p className="font-medium text-base truncate">
+                    {user?.name || 'Jane Doe'}
+                  </p>
                   <p className="text-sm text-muted-foreground truncate max-w-[130px]">
                     {user?.email || 'jane.doe@example.com'}
                   </p>
                 </div>
               </div>
-              
+
               <div className="px-1 py-1 text-sm text-muted-foreground border-b border-border/40 mx-1 pb-2 mt-1">
                 Currently Online
               </div>
-              
+
               <div className="p-1">
                 <DropdownMenuItem className="my-0.5">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuItem className="my-0.5">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuSeparator className="my-1.5 bg-border/50" />
-                
-                <DropdownMenuItem 
-                  className="my-0.5 text-destructive" 
+
+                <DropdownMenuItem
+                  className="my-0.5 text-destructive"
                   variant="destructive"
                   onClick={handleLogout}
                 >
@@ -189,7 +194,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             <span className="sr-only">Menu</span>
           </Button>
         </div>
-        
+
         {/* Search Overlay */}
         <SearchOverlay
           isOpen={searchOverlayOpen}

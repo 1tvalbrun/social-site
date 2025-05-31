@@ -17,6 +17,66 @@ interface RightPanelProps {
 
 export default function RightPanel({ onClose }: RightPanelProps) {
   const [groups, setGroups] = useState<any[]>([]);
+  const [groupActivity, setGroupActivity] = useState<any[]>([]);
+
+  const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchOnlineUsers = async () => {
+      try {
+        const res = await fetch(
+          'https://stg-headlesssocial-stage.kinsta.cloud/wp-json/buddyboss/v1/members?type=online'
+        );
+        const users = await res.json();
+        setOnlineUsers(users);
+      } catch (err) {
+        console.error('Failed to fetch online members:', err);
+      }
+    };
+
+    fetchOnlineUsers();
+  }, []);
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      const res = await fetch(
+        'https://stg-headlesssocial-stage.kinsta.cloud/wp-json/buddyboss/v1/activity'
+      );
+      const activities = await res.json();
+
+      const groupUpdates = activities.filter(
+        (item: any) =>
+          item.component === 'groups' && item.type === 'activity_update'
+      );
+
+      const enriched = await Promise.all(
+        groupUpdates.map(async (item: any) => {
+          const [groupRes, userRes] = await Promise.all([
+            fetch(
+              `https://stg-headlesssocial-stage.kinsta.cloud/wp-json/buddyboss/v1/groups/${item.primary_item_id}`
+            ),
+            fetch(
+              `https://stg-headlesssocial-stage.kinsta.cloud/wp-json/buddyboss/v1/members/${item.user_id}`
+            ),
+          ]);
+
+          const group = await groupRes.json();
+          const user = await userRes.json();
+
+          return {
+            id: item.id,
+            content: item.content,
+            groupName: group.name,
+            userName: user.name,
+          };
+        })
+      );
+
+      setGroupActivity(enriched);
+    };
+
+    fetchActivity();
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('wp_token');
@@ -49,6 +109,32 @@ export default function RightPanel({ onClose }: RightPanelProps) {
 
   return (
     <div className="h-full overflow-y-auto p-4 bg-white dark:bg-background">
+      {groupActivity.map(item => (
+        <div
+          key={item.id}
+          className="mb-4 p-4 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-muted/50 shadow-sm"
+        >
+          <div className="flex items-center space-x-2 mb-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage
+                src={item.avatar || '/generic-placeholder-graphic.png'}
+                alt={item.userName}
+              />
+              <AvatarFallback>{item.userName?.[0]}</AvatarFallback>
+            </Avatar>
+            <div className="text-sm text-gray-800 dark:text-white">
+              <strong>{item.userName}</strong>{' '}
+              <span className="text-muted-foreground">posted an update in</span>{' '}
+              <strong>{item.groupName}</strong>
+            </div>
+          </div>
+          <div
+            className="text-sm text-gray-700 dark:text-gray-300"
+            dangerouslySetInnerHTML={{ __html: item.content.rendered }}
+          />
+        </div>
+      ))}
+
       {isMobile && (
         <div className="flex justify-end mb-2">
           <Button variant="ghost" size="icon" onClick={onClose}>
@@ -61,6 +147,32 @@ export default function RightPanel({ onClose }: RightPanelProps) {
       <Card className="overflow-hidden bg-white dark:bg-card border-border">
         <CardContent className="p-0">
           {/* Currently Online Section */}
+          <div className="p-4">
+            <h3 className="text-sm font-medium mb-3 text-center text-foreground">
+              Currently Online
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {onlineUsers.map(user => (
+                <div key={user.id} className="relative">
+                  <Avatar className="h-10 w-10 border-2 border-white dark:border-card rounded-md">
+                    <AvatarImage
+                      src={
+                        user.avatar_urls?.full ||
+                        '/generic-placeholder-graphic.png'
+                      }
+                      alt={user.name}
+                      className="rounded-md"
+                    />
+                    <AvatarFallback className="rounded-md">
+                      {user.name?.[0] || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-card"></span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="p-4">
             <h3 className="text-sm font-medium mb-3 text-center text-foreground">
               Currently Online
