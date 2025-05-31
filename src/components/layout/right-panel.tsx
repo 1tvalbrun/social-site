@@ -10,15 +10,19 @@ import { useMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
 import { getBuddyBossGroups, getUserGroups } from '@/services/wordpress-api';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
+type RightPanelProps = {
+  onClose: () => void;
+  onSeeAllGroups: () => void;
+};
 
-interface RightPanelProps {
-  onClose?: () => void;
-}
-
-export default function RightPanel({ onClose }: RightPanelProps) {
+export default function RightPanel({
+  onClose,
+  onSeeAllGroups,
+}: RightPanelProps) {
   const [groups, setGroups] = useState<any[]>([]);
   const [groupActivity, setGroupActivity] = useState<any[]>([]);
-
+  const navigate = useNavigate();
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
 
   useEffect(() => {
@@ -68,6 +72,8 @@ export default function RightPanel({ onClose }: RightPanelProps) {
             content: item.content,
             groupName: group.name,
             userName: user.name,
+            avatar:
+              user.avatar_urls?.full || '/generic-placeholder-graphic.png',
           };
         })
       );
@@ -91,7 +97,6 @@ export default function RightPanel({ onClose }: RightPanelProps) {
       const loadGroups = async () => {
         try {
           const groups = await getUserGroups(currentUserId);
-          console.log('Loaded groups:', groups);
           setGroups(groups);
         } catch (error) {
           console.error('Error loading groups:', error);
@@ -243,7 +248,6 @@ export default function RightPanel({ onClose }: RightPanelProps) {
                         </span>
                       )}
                     </div>
-
                     <div className="text-[11px] text-gray-400 mt-0.5">
                       Last active:{' '}
                       {new Date(group.last_activity).toLocaleDateString()}
@@ -251,6 +255,15 @@ export default function RightPanel({ onClose }: RightPanelProps) {
                   </div>
                 </a>
               ))}
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onSeeAllGroups}
+                sx={{ mt: 2, fontWeight: 'bold', borderRadius: 2 }}
+              >
+                See All Groups
+              </Button>
             </div>
           </div>
 

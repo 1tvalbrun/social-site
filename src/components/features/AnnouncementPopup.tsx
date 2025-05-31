@@ -108,7 +108,6 @@ export default function AnnouncementDialog() {
 
   return (
     <Dialog
-      fullScreen
       open={open}
       onClose={handleClose}
       TransitionComponent={Transition}

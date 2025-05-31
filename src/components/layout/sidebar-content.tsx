@@ -25,7 +25,8 @@ export default function SidebarContent() {
 
   const thumbnailUrl =
     'https://alpha.uscreencdn.com/images/programs/434108/horizontal/nothing-to-worry-about.1693093184.png?auto=webp&width=350';
-  const videoUrl = 'https://thecomforterstream.tv/catalog';
+  const videoUrl =
+    'https://thecomforterstream.tv/programs/masters-for-nothing-to-worry-about-part-1mp4-a7a122';
 
   function handleVideoClick(url: string) {
     window.open(url, '_blank'); // or open in modal/player
@@ -33,26 +34,25 @@ export default function SidebarContent() {
 
   const shopItems = [
     {
-      title: 'New Arrivals',
-      description:
-        'Check out our latest books and resources for spiritual growth',
+      title: 'Home & Living',
+      description: 'The Greatest Prophet Of Our Time – Blue/Yellow – Canvas',
       image:
         'https://icgjc.com/store/wp-content/uploads/sites/4/2021/09/canvas-in-12x12-wall-613bde3c2fbd7-247x296.jpg',
-      url: 'https://yoursite.com/shop/new-arrivals',
+      url: 'https://icgjc.com/store/product/the-greatest-prophet-of-our-time-blue-yellow-canvas/',
     },
     {
-      title: 'Weekly Specials',
-      description: '15% off all devotional materials this week only',
+      title: 'Jerseys',
+      description: 'Jerusalem Lambs basketball jersey',
       image:
         'https://icgjc.com/store/wp-content/uploads/sites/4/2025/01/all-over-print-recycled-unisex-basketball-jersey-white-front-678cb3c5efab2-247x296.jpg',
-      url: 'https://yoursite.com/shop/specials',
+      url: 'https://icgjc.com/store/product/jerusalem-lambs-basketball-jersey/',
     },
     {
-      title: 'Gift Sets',
-      description: 'Curated scripture journals, bookmarks, and prayer cards',
+      title: 'T-Shirts',
+      description: 'Greatest Prophet Of Our Time Organic cotton kids t-shirt',
       image:
         'https://icgjc.com/store/wp-content/uploads/sites/4/2021/07/organic-cotton-kids-t-shirt-black-right-front-60e077912bfea-247x296.jpg',
-      url: 'https://yoursite.com/shop/gift-sets',
+      url: 'https://icgjc.com/store/product/greatest-prophet-of-our-time-organic-cotton-kids-t-shirt/',
     },
   ];
 

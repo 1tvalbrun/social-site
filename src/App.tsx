@@ -3,11 +3,12 @@ import { useAuth } from '@/contexts/auth-context';
 import SocialMediaHome from '@/components/layout/social-media-home';
 import LoginPage from '@/pages/login';
 import ForgotPasswordPage from '@/pages/forgot-password';
+import AllGroupsPage from './pages/all-groups';
 
 // Protected route component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     // You could replace this with a loading spinner component
     return (
@@ -16,11 +17,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
+
   return <>{children}</>;
 }
 
@@ -31,14 +32,16 @@ export default function App() {
       {/* Redirect signup to login but render forgot-password page */}
       <Route path="/signup" element={<Navigate to="/login" replace />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/allGroups" element={<AllGroupsPage />} />
+
       {/* Protected route */}
-      <Route 
-        path="/*" 
+      <Route
+        path="/*"
         element={
           <ProtectedRoute>
             <SocialMediaHome />
           </ProtectedRoute>
-        } 
+        }
       />
     </Routes>
   );

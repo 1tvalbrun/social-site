@@ -8,12 +8,14 @@ import BottomNavigation from '@/components/layout/bottom-navigation';
 import RightPanel from '@/components/layout/right-panel';
 import SidebarContent from '@/components/layout/sidebar-content';
 import { useMobile } from '@/hooks/use-mobile';
+import AllGroupsPage from '@/pages/all-groups';
 
 export default function SocialMediaHome() {
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showGroups, setShowGroups] = useState(false);
 
   // Ensure theme is available on client side
   useEffect(() => {
@@ -33,9 +35,15 @@ export default function SocialMediaHome() {
         </div>
 
         {/* Main content */}
-        <div className="flex-1 max-w-2xl mx-auto px-4 w-full">
-          <Feed />
-        </div>
+        {showGroups ? (
+          <div className="flex-1  mx-auto  w-full">
+            <AllGroupsPage onBackToFeed={() => setShowGroups(false)} />
+          </div>
+        ) : (
+          <div className="flex-1 max-w-2xl mx-auto px-4 w-full">
+            <Feed />
+          </div>
+        )}
 
         {/* Right Panel - contains online users, groups, and suggestions */}
         <div
@@ -53,7 +61,10 @@ export default function SocialMediaHome() {
                   onClick={() => setSidebarOpen(false)}
                 />
               )}
-              <RightPanel onClose={() => setSidebarOpen(false)} />
+              <RightPanel
+                onClose={() => setSidebarOpen(false)}
+                onSeeAllGroups={() => setShowGroups(true)}
+              />
             </>
           )}
         </div>

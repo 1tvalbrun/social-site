@@ -71,34 +71,23 @@ export default function WordPressPostCard({
   const handleLike = () => {
     setLiked(!liked);
   };
+  console.log('Embedded author:', post);
 
   // Extract author information
-  const getAuthorInfo = (): { name: string; avatar: string } => {
-    // Check if author is embedded in the post
-    if (
-      post._embedded &&
-      post._embedded.author &&
-      post._embedded.author.length > 0
-    ) {
-      const author = post._embedded.author[0];
-      const avatarUrl = author.avatar_urls
-        ? // Get largest avatar size available
-          author.avatar_urls['96'] ||
-          author.avatar_urls['48'] ||
-          author.avatar_urls['24']
-        : '/placeholder.svg?height=40&width=40';
+  const getAuthorInfo = (): {
+    name: string;
+    avatar: string;
+    profileUrl: string;
+  } => {
+    const name = post.name || 'WordPress User';
+    const avatar =
+      post.user_avatar?.thumb || '/placeholder.svg?height=40&width=40';
 
-      return {
-        name: author.name,
-        avatar: avatarUrl,
-      };
-    }
+    // Attempt to extract profile link from post.title
+    const match = post.title?.match(/href="([^"]+)"/);
+    const profileUrl = match ? match[1] : '#';
 
-    // Default values if author info not available
-    return {
-      name: 'WordPress User',
-      avatar: '/placeholder.svg?height=40&width=40',
-    };
+    return { name, avatar, profileUrl };
   };
 
   // Extract featured image if available
@@ -179,7 +168,7 @@ export default function WordPressPostCard({
 
   // Get author information
   const author = getAuthorInfo();
-
+  console.log('Author Info:', author);
   // Get featured image
   const featuredImage = getFeaturedImage();
 
@@ -214,22 +203,35 @@ export default function WordPressPostCard({
           ) && minorBadge}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Avatar>
-                <AvatarImage src={author.avatar} alt={author.name} />
-                <AvatarFallback>{author.name[0]}</AvatarFallback>
-              </Avatar>
+              <a
+                href={author.profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:underline"
+              >
+                <Avatar>
+                  <AvatarImage src={author.avatar} alt={author.name} />
+                  <AvatarFallback>{author.name?.[0] || 'U'}</AvatarFallback>
+                </Avatar>
 
-              <div>
-                <div className="font-semibold text-foreground">{post.name}</div>
-                <div className="text-sm text-gray-500 dark:text-muted-foreground flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {formatDate(post.date)}
+                <div>
+                  <div className="font-semibold text-foreground">
+                    {author.name}
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-muted-foreground flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {formatDate(post.date)}
+                  </div>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
+          <div
+            className="text-md text-gray-700 dark:text-gray-300 mt-2"
+            dangerouslySetInnerHTML={{ __html: post.title }}
+          />
 
-          <CardTitle className="text-xl font-bold text-foreground hover:text-primary transition-colors duration-200 mt-2">
+          <CardTitle className="text-xl font-bold text-foreground hover:text-primary transition-colors duration-200 ">
             <button
               onClick={handleReadMore}
               className="hover:underline text-left w-full"
@@ -238,43 +240,8 @@ export default function WordPressPostCard({
             </button>
           </CardTitle>
         </CardHeader>
-        {post.bp_media_ids?.map(media => (
-          <img
-            key={media.id}
-            src={media.attachment_data?.activity_thumb}
-            alt={media.title}
-            className="w-full rounded-md mt-4"
-          />
-        ))}
-
-        {post.bp_videos?.map(video => (
-          <video
-            key={video.id}
-            controls
-            poster={video.attachment_data?.video_activity_thumb}
-            className="w-full mt-4 rounded-md"
-          >
-            <source src={video.download_url} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ))}
-
-        {/* Featured image if available */}
-        {featuredImage && (
-          <div
-            className="w-full h-60 overflow-hidden cursor-pointer"
-            onClick={handleReadMore}
-          >
-            <img
-              src={featuredImage}
-              alt={post.title.rendered}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-
-        <CardContent className="p-4 pt-2">
-          <div className="text-foreground prose prose-sm dark:prose-invert max-w-none">
+        <CardContent className="p-4">
+          <div className="text-foreground prose prose-sm dark:prose-invert prose-p:my-1 prose:my-0 max-w-none">
             {post.excerpt?.rendered ? (
               <div
                 dangerouslySetInnerHTML={{
@@ -293,6 +260,41 @@ export default function WordPressPostCard({
             )}
           </div>
         </CardContent>
+
+        {post.bp_media_ids?.map(media => (
+          <img
+            key={media.id}
+            src={media.attachment_data?.activity_thumb}
+            alt={media.title}
+            className="w-full rounded-md "
+          />
+        ))}
+
+        {post.bp_videos?.map(video => (
+          <video
+            key={video.id}
+            controls
+            poster={video.attachment_data?.video_activity_thumb}
+            className="w-full rounded-md"
+          >
+            <source src={video.download_url} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ))}
+
+        {/* Featured image if available */}
+        {featuredImage && (
+          <div
+            className="w-full h-20 overflow-hidden cursor-pointer"
+            onClick={handleReadMore}
+          >
+            <img
+              src={featuredImage}
+              alt={post.title.rendered}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
 
         <CardFooter className="p-4 pt-0 flex items-center justify-between">
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -369,7 +371,7 @@ export default function WordPressPostCard({
               dangerouslySetInnerHTML={{ __html: post.title.rendered }}
             />
             <DialogDescription className="flex items-center gap-2 mt-2">
-              <Avatar className="h-6 w-6">
+              <Avatar className="transition-transform hover:scale-105 duration-200">
                 <AvatarImage src={author.avatar} alt={author.name} />
                 <AvatarFallback>{author.name[0]}</AvatarFallback>
               </Avatar>
@@ -433,7 +435,7 @@ export default function WordPressPostCard({
                     className="border-b border-gray-100 dark:border-gray-800 pb-4"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <Avatar className="h-6 w-6">
+                      <Avatar className="transition-transform hover:scale-105 duration-200">
                         <AvatarImage
                           src={
                             comment.author_avatar_urls?.['96'] ||

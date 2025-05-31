@@ -27,10 +27,7 @@ export interface WordPressPost {
   reported: boolean;
   report_button_text: string;
   user_id: number;
-  title: {
-    rendered: string;
-    raw?: string;
-  };
+  title: any;
   content: {
     rendered: string;
     raw?: string;
@@ -45,6 +42,7 @@ export interface WordPressPost {
   tags: number[];
   featured_media: number;
   author: number;
+  user_avatar: any;
   // Added for better integration
   _embedded?: {
     author?: Array<WordPressUser>;
